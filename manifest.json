@@ -1,0 +1,25 @@
+{
+    "manifest_version": 3,
+    "name": "ImageOps",
+    "version": "0.0.1",
+    "action": {
+        "default_popup": "popup/popup.html",
+        "default_title": "ImageOps"
+    },
+    "description": "Image scraper and modifier",
+    "icons": {},
+    "permissions": [
+        "scripting",
+        "activeTab"
+    ],
+    "content_scripts": [
+        {
+            "js": [
+                "content.js"
+            ],
+            "matches": [
+                "https://shop-isspro.mybigcommerce.com/*"
+            ]
+        }
+    ]
+}
