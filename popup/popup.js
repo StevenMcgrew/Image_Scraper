@@ -1,20 +1,32 @@
-let btn = document.getElementById('btn');
-let p = document.getElementById('p');
+const getImagesForm = document.getElementById('getImagesForm');
+const p = document.getElementById('p');
+const img = document.getElementById('img');
 
-btn.addEventListener('click', () => {
-    send({ getImages: true });
+getImagesForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    send({
+        getImages: {
+            maxWidth: Math.round(e.target.maxWidth.value)
+        }
+    });
 });
 
+
+/**************************************************************************
+Handle incoming messages
+***************************************************************************/
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.finishedGettingImages) {
-        p.textContent = "All done getting images.";
+        p.textContent = message.finishedGettingImages.imgSrcs;
     }
     // Optional: sendResponse({message: "goodbye"});
 });
 
 
 /**************************************************************************
-Supporting functions
+Send outgoing messages
 ***************************************************************************/
 async function send(message) {
     const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
