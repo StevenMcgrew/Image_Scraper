@@ -4,29 +4,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ImageOps</title>
-    <link rel="stylesheet" href="pico.min.css">
-    <style>
-        body {
-            width: 200px;
-            height: 200px;
-        }
-    </style>
+    <title>Image-Ops</title>
+    <link rel="stylesheet" href="pico.css">
+    <link rel="stylesheet" href="popup.css">
 </head>
 
-<body>
-    <form id="getImagesForm">
-        <label for="maxWidth">Max image width</label>
-        <input type="number" id="maxWidth" name="maxWidth" min="32" max="4000" value="1000" required>
+<body class="body-grid">
 
-        <label for="maxHeight">Max image height</label>
-        <input type="number" id="maxHeight" name="maxHeight" min="32" max="4000" value="1000" required>
+    <header class="grid my-header">
+        <div class="select-all-container">
+            <label class="select-all" hidden>
+                <input type="checkbox">
+                Select All
+            </label>
+        </div>
 
-        <input type="submit" value="Get Images">
-    </form>
+        <div class="center-heading">
+            <div class="logo">
 
-    <p id="p"></p>
-    <img id="img" src="" alt="">
+            </div>
+
+            <h4>Image-Ops</h4>
+        </div>
+
+        <button class="outline settings-btn">Settings</button>
+    </header>
+
+    <main class="my-main">
+
+        <div class="get-images-panel">
+            <button class="get-images-btn">Get Images</button>
+            <div class="current-settings-container">
+                <span>Current Settings:</span>
+                <ul class="current-settings-list">
+                    <li>Max Size: 2000 x 2000</li>
+                    <li>Min Size: 32 x 32</li>
+                </ul>
+                <a class="edit-settings">Edit Settings</a>
+            </div>
+        </div>
+
+        <div class="img-grid">
+        </div>
+
+    </main>
+
+    <button class="download-btn" hidden>Download Images</button>
+
+    <template>
+        <div class="grid-item">
+            <label class="select-img">
+                <input type="checkbox">
+                <span class="img-details">600x609 JPEG</span>
+            </label>
+            <div class="img-container">
+                <img class="img-preview" src="https://media.npr.org/programs/atc/features/2009/may/short/abetall3-0483922b5fb40887fc9fbe20a606e256cbbd10ee.jpg" alt="">
+            </div>
+        </div>
+    </template>
+
+    <dialog class="settings-modal">
+        <article>
+            <header class="settings-header">
+                <h3 class="settings-h3">Settings</h3>
+            </header>
+            <form id="settingsForm" class="settings-form">
+
+                <div></div>
+                <span class="units-label">Width (px)</span>
+                <div></div>
+                <span class="units-label">Height (px)</span>
+                <label>Max Size</label>
+                <input type="number" class="num-input" min="1" max="5000" value="1000" required>
+                <span>x</span>
+                <input type="number" class="num-input" min="1" max="5000" value="1000" required>
+                <label>Min Size</label>
+                <input type="number" class="num-input" min="1" max="5000" value="1" required>
+                <span>x</span>
+                <input type="number" class="num-input" min="1" max="5000" value="1" required>
+                <label class="margin-top-5">Resize images to fit</label>
+                <input type="checkbox" role="switch" class="margin-top-5 toggle-switch">
+                <div></div>
+                <div></div>
+                <label class="margin-top-5">Convert to jpg</label>
+                <input type="checkbox" role="switch" class="margin-top-5 toggle-switch">
+
+            </form>
+            <footer class="settings-footer">
+                <button role="button" class="cancel-modal-btn outline">Cancel</button>
+                <button role="button" class="confirm-modal-btn" type="submit" form="settingsForm">Save</button>
+            </footer>
+        </article>
+    </dialog>
 
     <script src="popup.js"></script>
 </body>

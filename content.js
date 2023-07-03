@@ -1,9 +1,10 @@
 let imgSrcs = [];
 
 function getImages(maxWidth) {
-    const hn = window.location.hostname;
+    imgSrcs = [];
 
-    hn === 'shop-isspro.mybigcommerce.com' ? pushBigCommerceImages(maxWidth) : null;
+    const hn = window.location.hostname;
+    hn === 'shop-isspro.mybigcommerce.com' ? handleBigCommerceImages(maxWidth) : null;
 
     send({
         finishedGettingImages: {
@@ -12,7 +13,7 @@ function getImages(maxWidth) {
     });
 }
 
-function pushBigCommerceImages(maxWidth) {
+function handleBigCommerceImages(maxWidth) {
     const anchors = [...document.querySelectorAll('.productView-thumbnail-link')];
     const srcSets = anchors.map(a => a.firstElementChild.srcset);
 
@@ -37,6 +38,21 @@ function pushBigCommerceImages(maxWidth) {
     }
 }
 
+function downloadImages(imgSrcs) {
+    for (const imgSrc of imgSrcs) {
+        const a = document.createElement('a');
+        a.href = imgSrc;
+        a.classList.add('downloadAnchor');
+        a.setAttribute('download', Date.now());
+        a.textContent = imgSrc;
+        document.body.appendChild(a);
+    }
+    // const anchors = [...document.querySelectorAll('.downloadAnchor')];
+    // for (const a of anchors) {
+    //     a.click();
+    // }
+}
+
 
 /**************************************************************************
 Handle incoming messages
@@ -44,6 +60,10 @@ Handle incoming messages
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.getImages) {
         getImages(message.getImages.maxWidth);
+        return;
+    }
+    if (message.downloadImages) {
+        downloadImages(message.downloadImages.selectedImgSrcs);
     }
     // Optional: sendResponse({message: "goodbye"});
 });

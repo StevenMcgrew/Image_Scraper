@@ -1,0 +1,198 @@
+/****************************************************
+Adjustments to pico.css
+*****************************************************/
+
+@media (min-width: 32rem) {
+    .grid {
+        grid-template-columns: repeat(auto-fit, minmax(0%, 1fr));
+    }
+}
+
+@media only screen and (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+        --background-color: rgb(24, 26, 27)
+    }
+}
+
+[data-theme=dark] {
+    --background-color: rgb(24, 26, 27)
+}
+
+input:not([type=checkbox], [type=radio]),
+select,
+textarea {
+    margin-bottom: 0;
+    text-align: center;
+}
+
+[type=checkbox]~label,
+[type=radio]~label {
+    margin: 0;
+}
+
+label,
+fieldset legend {
+    margin: 0;
+}
+
+[type=checkbox],
+[type=radio] {
+    margin: 0;
+}
+
+/****************************************************
+My styles, note: 1rem = 20px
+*****************************************************/
+
+.body-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+    width: 780px;
+    height: 600px;
+    --img-grid-item-width: 20.4rem;
+    --img-grid-gap: 0.5rem;
+}
+
+.my-header {
+    padding: 0;
+    align-items: center;
+}
+
+.select-all-container {
+    align-self: end;
+    justify-self: start;
+    margin-left: 0.35rem;
+    margin-bottom: 0.1rem;
+}
+
+.center-heading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.center-heading>* {
+    margin: 0;
+}
+
+.logo {
+    width: 2rem;
+    height: 2rem;
+    margin-right: 0.6rem;
+    background-color: lightblue;
+}
+
+.settings-btn {
+    width: min-content;
+    margin: 0;
+    padding: 0.5rem;
+    align-self: end;
+    justify-self: end;
+}
+
+.my-main {
+    position: relative;
+    padding: 0;
+    overflow: auto;
+}
+
+.get-images-panel {
+    position: absolute;
+    top: 35%;
+    transform: translateY(-50%);
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.current-settings-container>* {
+    font-size: 0.8rem;
+}
+
+.current-settings-list {
+    margin-top: 0.2rem;
+    margin-bottom: 0;
+}
+
+.edit-settings {
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.img-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--img-grid-gap);
+    padding: var(--img-grid-gap);
+}
+
+.grid-item {
+    width: var(--img-grid-item-width);
+    border: 1px solid gray;
+    border-radius: 0.2rem;
+    overflow: hidden;
+}
+
+.select-img {
+    padding-left: 0.25rem;
+    padding-top: 0.1rem;
+}
+
+.img-container {
+    width: var(--img-grid-item-width);
+    height: var(--img-grid-item-width);
+}
+
+.img-preview {
+    width: var(--img-grid-item-width);
+    height: var(--img-grid-item-width);
+    object-fit: scale-down;
+    object-position: center;
+}
+
+.download-btn {
+    margin: 0;
+    border-radius: 0;
+}
+
+.settings-header {
+    padding: 1rem;
+}
+
+.settings-h3 {
+    margin: 0;
+}
+
+.settings-footer {
+    padding: 0.8rem;
+}
+
+.settings-footer>button {
+    width: auto;
+}
+
+.settings-form {
+    display: grid;
+    grid-template-columns: 1fr repeat(3, auto);
+    grid-template-rows: repeat(5, auto);
+    row-gap: 15px;
+    column-gap: 5px;
+    align-items: center;
+}
+
+.num-input {
+    max-width: 6rem;
+    max-height: 2rem;
+}
+
+.units-label {
+    justify-self: center;
+}
+
+.toggle-switch {
+    justify-self: center;
+}
+
+.margin-top-5 {
+    margin-top: 0.25rem;
+}
