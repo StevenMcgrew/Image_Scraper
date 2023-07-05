@@ -44,21 +44,21 @@
             </div>
         </div>
 
-        <div class="img-grid">
+        <div class="img-flexwrap">
         </div>
 
     </main>
 
     <button class="download-btn" hidden>Download Images</button>
 
-    <template>
-        <div class="grid-item">
+    <template class="flex-item-template">
+        <div class="flex-item">
             <label class="select-img">
                 <input type="checkbox">
                 <span class="img-details">600x609 JPEG</span>
             </label>
             <div class="img-container">
-                <img class="img-preview" src="https://media.npr.org/programs/atc/features/2009/may/short/abetall3-0483922b5fb40887fc9fbe20a606e256cbbd10ee.jpg" alt="">
+                <!-- <img class="img-preview" src=""> -->
             </div>
         </div>
     </template>
@@ -66,7 +66,7 @@
     <dialog class="settings-modal">
         <article>
             <header class="settings-header">
-                <h3 class="settings-h3">Settings</h3>
+                <h4 class="settings-h3">Settings</h4>
             </header>
             <form id="settingsForm" class="settings-form">
 
@@ -75,19 +75,15 @@
                 <div></div>
                 <span class="units-label">Height (px)</span>
                 <label>Max Size</label>
-                <input type="number" class="num-input" min="1" max="5000" value="1000" required>
+                <input type="number" name="maxW" class="num-input" min="1" max="5000" required>
                 <span>x</span>
-                <input type="number" class="num-input" min="1" max="5000" value="1000" required>
-                <label>Min Size</label>
-                <input type="number" class="num-input" min="1" max="5000" value="1" required>
-                <span>x</span>
-                <input type="number" class="num-input" min="1" max="5000" value="1" required>
-                <label class="margin-top-5">Resize images to fit</label>
-                <input type="checkbox" role="switch" class="margin-top-5 toggle-switch">
+                <input type="number" name="maxH" class="num-input" min="1" max="5000" required>
+                <label class="margin-top-5">Resize and convert to jpg</label>
+                <input type="checkbox" name="isResizeAndConvert" role="switch" class="margin-top-5 toggle-switch">
                 <div></div>
                 <div></div>
-                <label class="margin-top-5">Convert to jpg</label>
-                <input type="checkbox" role="switch" class="margin-top-5 toggle-switch">
+                <label class="margin-top-5">Create folder on download</label>
+                <input type="checkbox" name="isCreateFolder" role="switch" class="margin-top-5 toggle-switch">
 
             </form>
             <footer class="settings-footer">
@@ -96,6 +92,8 @@
             </footer>
         </article>
     </dialog>
+
+    <canvas class="canvas" hidden></canvas>
 
     <script src="popup.js"></script>
 </body>

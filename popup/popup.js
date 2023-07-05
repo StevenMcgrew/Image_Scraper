@@ -1,10 +1,15 @@
 const getImagesBtn = document.querySelector('.get-images-btn');
-const imgGrid = document.querySelector('.img-grid');
+const imgFlexwrap = document.querySelector('.img-flexwrap');
 const downloadBtn = document.querySelector('.download-btn');
 const settingsBtn = document.querySelector('.settings-btn');
 const editSettings = document.querySelector('.edit-settings');
 const cancelModalBtn = document.querySelector('.cancel-modal-btn');
 const settingsForm = document.querySelector('.settings-form');
+const canvas = document.querySelector('.canvas');
+const flexItemTemplate = document.querySelector('.flex-item-template');
+const getImagesPanel = document.querySelector('.get-images-panel');
+const imgElements = [];
+let imgCount = 0;
 
 settingsBtn.addEventListener('click', (e) => {
     const settingsModal = document.querySelector('.settings-modal');
@@ -17,6 +22,7 @@ editSettings.addEventListener('click', (e) => {
 });
 
 cancelModalBtn.addEventListener('click', (e) => {
+    setSettingsForm();
     const settingsModal = document.querySelector('.settings-modal');
     closeModal(settingsModal);
 });
@@ -24,27 +30,37 @@ cancelModalBtn.addEventListener('click', (e) => {
 settingsForm.addEventListener('submit', (e) => {
     e.preventDefault();
     e.stopPropagation();
-    // TODO: Save settings
 
-    const settingsModal = document.querySelector('.settings-modal');
-    closeModal(settingsModal);
+    const settings = {
+        maxW: settingsForm.maxW.value,
+        maxH: settingsForm.maxH.value,
+        isResizeAndCovert: settingsForm.isResizeAndConvert.checked,
+        isCreateFolder: settingsForm.isCreateFolder.checked
+    };
+
+    chrome.storage.sync.set(settings)
+        .then(() => {
+            const settingsModal = document.querySelector('.settings-modal');
+            closeModal(settingsModal);
+        });
 });
 
 getImagesBtn.addEventListener('click', (e) => {
-    send({
-        getImages: {
-            maxWidth: Math.round(e.target.maxWidth.value)
+    getImagesPanel.hidden = true;
+    emit({
+        getImageSrcs: {
+            maxW: Math.round(settingsForm.maxW)
         }
     });
 });
 
 downloadBtn.addEventListener('click', () => {
-    const imgs = [...imgGrid.children];
+    const imgs = [...imgFlexwrap.children];
     const imgSrcs = imgs.map(img => img.src);
     // for (img of imgs) {
 
     // }
-    send({
+    emit({
         downloadImages: {
             selectedImgSrcs: imgSrcs
         }
@@ -67,46 +83,85 @@ function closeModal(modal) {
     }, 400);
 };
 
-function replaceImages(imgSrcs) {
-    // let imgArray = [];
-    for (const imgSrc of imgSrcs) {
-        // Download image and store it or set it to an img element
-
-        // Determine size
-        const size = determineSize(img.width, img.height, maxW, maxH);
-
-        // Draw to canvas
-
-
-
-        // Create anchor and set href to myCanvas.toDataURL()
-
-        // Click anchor to trigger download
-
-
-        // const img = new Image(200, 200);
-        // img.src = imgSrc;
-        // img.classList.add('image-item');
-        // imgArray.push(img);
-    }
-    // imgGrid.replaceChildren(...imgArray);
+function setSettingsForm() {
+    chrome.storage.sync.get(null)
+        .then((result) => {
+            settingsForm.maxW.value = Math.round(result.maxW);
+            settingsForm.maxH.value = Math.round(result.maxH);
+            settingsForm.isResizeAndConvert.checked = result.isResizeAndConvert;
+            settingsForm.isCreateFolder.checked = result.isCreateFolder;
+        });
 }
 
-function setGridItemImg(canvas, div) {
-    if (canvas.width < div.clientWidth && canvas.height < div.clientHeight) {
-        div.style.backgroundSize = 'auto';
+function createImgElements(srcs) {
+    for (const src of srcs) {
+        const img = document.createElement('img');
+        img.src = src;
+        img.addEventListener('error', (e) => { handleImgLoadError(e, srcs.length); });
+        img.addEventListener('load', (e) => { pushAndContinue(e, srcs.length); });
     }
-    else {
-        div.style.backgroundSize = 'contain';
+}
+
+function handleImgLoadError(e, srcsLength) {
+    imgCount++;
+    if (imgCount === srcsLength) {
+        continueAndFinish();
     }
-    div.style.backgroundImage = 'url(' + canvas.toDataURL() + ')';
-};
+}
+
+function pushAndContinue(e, srcsLength) {
+    imgCount++;
+    imgElements.push(e.currentTarget);
+    if (imgCount === srcsLength) {
+        continueAndFinish();
+    }
+}
+
+function continueAndFinish() {
+    imgElements.sort(compareWidths);
+
+    for (const img of imgElements) {
+        const W = img.naturalWidth;
+        const H = img.naturalHeight;
+        const maxW = Math.round(settingsForm.maxW.value);
+        const maxH = Math.round(settingsForm.maxH.value);
+        const isResizeAndConvert = settingsForm.isResizeAndConvert.checked;
+
+        img.removeEventListener('load', pushAndContinue);
+
+        // Resizing and converting
+        if (W > maxW || H > maxH) {
+            if (isResizeAndConvert) {
+                drawToCanvas(canvas, img, maxW, maxH);
+                img.src = canvas.toDataURL('image/jpeg', 1.0);
+            }
+            else {
+                img.src = null;
+            }
+        }
+        else if (isResizeAndConvert) {
+            drawToCanvas(canvas, img, W, H);
+            img.src = canvas.toDataURL('image/jpeg', 1.0);
+        }
+
+        // Append to img-flexwrap
+        const flexItem = flexItemTemplate.content.firstElementChild.cloneNode(true);
+        const imgContainer = flexItem.querySelector('.img-container');
+        img.classList.add('img-preview');
+        imgContainer.appendChild(img);
+        imgFlexwrap.appendChild(flexItem);
+    }
+}
+
+function compareWidths(imgA, imgB) {
+    return imgB.naturalWidth - imgA.naturalWidth;
+}
 
 
 /**************************************************************************
 Image Ops
 ***************************************************************************/
-function drawOptimizedImage(canvas, image, width, height) {
+function drawToCanvas(canvas, image, width, height) {
     canvas.width = width;
     canvas.height = height;
     let ctx = canvas.getContext('2d');
@@ -137,17 +192,17 @@ function determineSize(w, h, maxW, maxH) {
 Handle incoming messages
 ***************************************************************************/
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.finishedGettingImages) {
-        replaceImages(message.finishedGettingImages.imgSrcs);
+    if (message.foundImgSrcs) {
+        createImgElements(message.foundImgSrcs.imgSrcs);
     }
     // Optional: sendResponse({message: "goodbye"});
 });
 
 
 /**************************************************************************
-Send outgoing messages
+Emit outgoing messages
 ***************************************************************************/
-async function send(message) {
+async function emit(message) {
     const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
     const response = await chrome.tabs.sendMessage(tab.id, message);
     // Optional: do something with response
@@ -175,3 +230,8 @@ async function send(message) {
 //         window['alreadyInjected'] = true;
 //     });
 // }
+
+/**************************************************************************
+On load
+***************************************************************************/
+setSettingsForm();

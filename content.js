@@ -1,41 +1,69 @@
-let imgSrcs = [];
+function getImageSrcs(maxW) {
+    const imgSrcs = new Set();
 
-function getImages(maxWidth) {
-    imgSrcs = [];
+    // const elements = [...document.body.getElementsByTagName("*")];
 
-    const hn = window.location.hostname;
-    hn === 'shop-isspro.mybigcommerce.com' ? handleBigCommerceImages(maxWidth) : null;
+    // for (const el of elements) {
+    //     if (el.tagName !== 'IMG') {
+    //         continue;
+    //     }
 
-    send({
-        finishedGettingImages: {
-            imgSrcs: imgSrcs
+    //     if (el.srcset) {
+
+    //         continue;
+    //     }
+
+    //     if (el.src) {
+
+    //         continue;
+    //     }
+
+    //     TODO: handle <picture><source> elements
+    //     TODO: handle shadowRoot elements
+    //     TODO: handle input's of type image (submit buttons that use an image)
+    //     TODO: handle anchor's that link to images (href ends in .jpg, for example)
+    //     TODO: handle css background-image and background
+    // }
+
+    const images = [...document.images];
+
+    for (const img of images) {
+        if (img.srcset) {
+            const src = getSrcFromSrcset(img.srcset, maxW);
+            if (src) {
+                imgSrcs.add(src);
+                continue;
+            }
+        }
+        if (img.src) {
+            imgSrcs.add(img.src);
+        }
+    }
+
+    emit({
+        foundImgSrcs: {
+            imgSrcs: [...imgSrcs]
         }
     });
 }
 
-function handleBigCommerceImages(maxWidth) {
-    const anchors = [...document.querySelectorAll('.productView-thumbnail-link')];
-    const srcSets = anchors.map(a => a.firstElementChild.srcset);
+function getSrcFromSrcset(srcset, maxW) {
+    let currentWidth = 0;
+    let currentSrc = '';
+    const srcsAndDescriptors = srcset.split(',');
 
-    for (const srcSet of srcSets) {
-        if (srcSet) {
-            let currentWidth = 0;
-            let currentSrc = '';
-            const srcAndWidthArray = srcSet.split(', ');
-
-            for (const srcAndWidth of srcAndWidthArray) {
-                if (srcAndWidth) {
-                    const splitSrcAndWidth = srcAndWidth.split(' ');
-                    const width = Math.round(splitSrcAndWidth[1].slice(0, -1));
-                    if (width < maxWidth && width > currentWidth) {
-                        currentWidth = width;
-                        currentSrc = splitSrcAndWidth[0];
-                    }
-                }
-            }
-            imgSrcs.push(currentSrc);
+    for (const srcAndDescriptor of srcsAndDescriptors) {
+        srcAndDescriptor.trim();
+        if (!srcAndDescriptor.includes(' ')) { continue; }
+        const srcAndDescriptorArray = srcAndDescriptor.split(' ');
+        if (!srcAndDescriptorArray[1].endsWith('w')) { continue; }
+        const width = Math.round(srcAndDescriptorArray[1].slice(0, -1));
+        if (width < maxW && width > currentWidth) {
+            currentWidth = width;
+            currentSrc = srcAndDescriptorArray[0];
         }
     }
+    return currentSrc;
 }
 
 function downloadImages(imgSrcs) {
@@ -58,8 +86,8 @@ function downloadImages(imgSrcs) {
 Handle incoming messages
 ***************************************************************************/
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.getImages) {
-        getImages(message.getImages.maxWidth);
+    if (message.getImageSrcs) {
+        getImageSrcs(message.getImageSrcs.maxW);
         return;
     }
     if (message.downloadImages) {
@@ -70,9 +98,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 
 /**************************************************************************
-Send outgoing messages
+Emit outgoing messages
 ***************************************************************************/
-async function send(message) {
+async function emit(message) {
     const response = await chrome.runtime.sendMessage(message);
     // Optional: do something with response
 }

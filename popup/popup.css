@@ -50,8 +50,8 @@ My styles, note: 1rem = 20px
     grid-template-rows: auto 1fr auto;
     width: 780px;
     height: 600px;
-    --img-grid-item-width: 20.4rem;
-    --img-grid-gap: 0.5rem;
+    --img-flexwrap-item-width: 20.4rem;
+    --img-flexwrap-gap: 0.5rem;
 }
 
 .my-header {
@@ -106,7 +106,7 @@ My styles, note: 1rem = 20px
 }
 
 .current-settings-container>* {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
 }
 
 .current-settings-list {
@@ -119,15 +119,15 @@ My styles, note: 1rem = 20px
     text-decoration: none;
 }
 
-.img-grid {
+.img-flexwrap {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--img-grid-gap);
-    padding: var(--img-grid-gap);
+    gap: var(--img-flexwrap-gap);
+    padding: var(--img-flexwrap-gap);
 }
 
-.grid-item {
-    width: var(--img-grid-item-width);
+.flex-item {
+    width: var(--img-flexwrap-item-width);
     border: 1px solid gray;
     border-radius: 0.2rem;
     overflow: hidden;
@@ -139,13 +139,13 @@ My styles, note: 1rem = 20px
 }
 
 .img-container {
-    width: var(--img-grid-item-width);
-    height: var(--img-grid-item-width);
+    width: var(--img-flexwrap-item-width);
+    height: var(--img-flexwrap-item-width);
 }
 
 .img-preview {
-    width: var(--img-grid-item-width);
-    height: var(--img-grid-item-width);
+    width: var(--img-flexwrap-item-width);
+    height: var(--img-flexwrap-item-width);
     object-fit: scale-down;
     object-position: center;
 }
@@ -178,6 +178,7 @@ My styles, note: 1rem = 20px
     row-gap: 15px;
     column-gap: 5px;
     align-items: center;
+    font-size: 0.9rem;
 }
 
 .num-input {

@@ -10,7 +10,8 @@
     "icons": {},
     "permissions": [
         "scripting",
-        "activeTab"
+        "activeTab",
+        "storage"
     ],
     "content_scripts": [
         {
@@ -18,7 +19,7 @@
                 "content.js"
             ],
             "matches": [
-                "https://shop-isspro.mybigcommerce.com/*"
+                "https://*/*"
             ]
         }
     ]
