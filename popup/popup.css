@@ -129,7 +129,7 @@ My styles, note: 1rem = 20px
 .flex-item {
     width: var(--img-flexwrap-item-width);
     border: 1px solid gray;
-    border-radius: 0.2rem;
+    border-radius: var(--border-radius);
     overflow: hidden;
 }
 

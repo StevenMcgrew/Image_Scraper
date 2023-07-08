@@ -9,7 +9,7 @@ const canvas = document.querySelector('.canvas');
 const flexItemTemplate = document.querySelector('.flex-item-template');
 const getImagesPanel = document.querySelector('.get-images-panel');
 const selectAllCheckbox = document.querySelector('.select-all');
-const imgElements = [];
+let imgElements = [];
 let imgCount = 0;
 
 settingsBtn.addEventListener('click', (e) => {
@@ -94,9 +94,9 @@ function createImgElements(srcs) {
             src = changeSrcToHttps(src);
         }
         const img = document.createElement('img');
+        img.onerror = (e) => { handleImgLoadError(e, srcs.length); };
+        img.onload = (e) => { pushAndContinue(e, srcs.length); };
         img.src = src;
-        img.addEventListener('error', (e) => { handleImgLoadError(e, srcs.length); });
-        img.addEventListener('load', (e) => { pushAndContinue(e, srcs.length); });
     }
 }
 
@@ -119,14 +119,14 @@ function continueAndFinish() {
     imgElements.sort(compareWidths);
 
     for (const img of imgElements) {
+        img.onerror = null;
+        img.onload = null;
+
         let W = img.naturalWidth;
         let H = img.naturalHeight;
         const maxW = Math.round(settingsForm.maxW.value);
         const maxH = Math.round(settingsForm.maxH.value);
         const isResizeAndConvert = settingsForm.isResizeAndConvert.checked;
-
-        img.removeEventListener('error', handleImgLoadError);
-        img.removeEventListener('load', pushAndContinue);
 
         // Resizing and converting
         let resizedMessage = '';
@@ -138,16 +138,16 @@ function continueAndFinish() {
                 W = newSize.width;
                 H = newSize.height;
                 resizedMessage = 'Resized & ';
+            } else {
+                continue;
             }
-            else {
-                img.src = 'https://hips.hearstapps.com/hmg-prod/images/dog-puppy-on-garden-royalty-free-image-1586966191.jpg?crop=0.752xw:1.00xh;0.175xw,0&resize=1200:*';
-            }
-        }
-        else if (isResizeAndConvert) {
-            const fileExt = getFileExtFromSrc(img.src);
-            if (fileExt !== 'jpg' && fileExt !== 'jpeg') {
-                drawToCanvas(canvas, img, W, H);
-                img.src = canvas.toDataURL('image/jpeg', 1.0);
+        } else {
+            if (isResizeAndConvert) {
+                const fileExt = getFileExtFromSrc(img.src);
+                if (fileExt !== 'jpg' && fileExt !== 'jpeg') {
+                    drawToCanvas(canvas, img, W, H);
+                    img.src = canvas.toDataURL('image/jpeg', 1.0);
+                }
             }
         }
 
@@ -162,16 +162,50 @@ function continueAndFinish() {
 
         // Append to img-flexwrap
         const flexItem = flexItemTemplate.content.firstElementChild.cloneNode(true);
-        const imgContainer = flexItem.querySelector('.img-container');
+        const checkboxLabel = flexItem.querySelector('.select-img');
+        const checkbox = flexItem.querySelector('.img-checkbox');
         const imgDetails = flexItem.querySelector('.img-details');
+        const imgContainer = flexItem.querySelector('.img-container');
+        flexItem.addEventListener('click', toggleChecked);
+        checkboxLabel.addEventListener('click', (e) => e.stopPropagation());
+        checkbox.addEventListener('click', toggleFlexItemChecked);
         imgDetails.textContent = `${W}x${H} ${fileType}`;
         img.classList.add('img-preview');
         imgContainer.appendChild(img);
         imgFlexwrap.appendChild(flexItem);
+    }
 
-        // Show download-btn and select-all
-        selectAllCheckbox.removeAttribute('hidden');
-        downloadBtn.removeAttribute('hidden');
+    // Show download-btn and select-all
+    selectAllCheckbox.removeAttribute('hidden');
+    downloadBtn.removeAttribute('hidden');
+}
+
+function toggleChecked(e) {
+    const item = e.currentTarget;
+    const checkbox = item.firstElementChild.firstElementChild;
+    checkbox.checked = !checkbox.checked;
+    toggleDatasetChecked(item);
+}
+
+function toggleFlexItemChecked(e) {
+    e.stopPropagation();
+    let currentElement = e.currentTarget;
+    while (currentElement.dataset.name !== 'flexItem') {
+        currentElement = currentElement.parentElement;
+        if (currentElement.tagName.toLowerCase() == 'body') {
+            break;
+        }
+    }
+    toggleDatasetChecked(currentElement);
+}
+
+function toggleDatasetChecked(element) {
+    if (element.dataset.checked === 'true') {
+        element.dataset.checked = 'false';
+        element.style.outline = '1px solid gray';
+    } else {
+        element.dataset.checked = 'true';
+        element.style.outline = '2px solid var(--primary)';
     }
 }
 
