@@ -52,6 +52,7 @@ My styles, note: 1rem = 20px
     height: 600px;
     --img-flexwrap-item-width: 20.4rem;
     --img-flexwrap-gap: 0.5rem;
+    border: 1px solid gray;
 }
 
 .my-header {
@@ -80,15 +81,35 @@ My styles, note: 1rem = 20px
     width: 2rem;
     height: 2rem;
     margin-right: 0.6rem;
-    background-color: lightblue;
+}
+
+.logo-svg {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    top: -5px;
+    left: -5px;
 }
 
 .settings-btn {
-    width: min-content;
-    margin: 0;
-    padding: 0.5rem;
+    border-radius: 50%;
+    height: 40px;
+    margin: 6px;
+    padding: 8px;
+    width: 40px;
     align-self: end;
     justify-self: end;
+    border: none;
+    color: var(--h4-color);
+    line-height: 0;
+}
+
+.settings-btn:hover {
+    background-color: rgba(232, 234, 237, 0.078);
+}
+
+.gear-icon {
+    fill: currentColor;
 }
 
 .my-main {
@@ -136,6 +157,9 @@ My styles, note: 1rem = 20px
 .select-img {
     padding-left: 0.25rem;
     padding-top: 0.1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .img-container {

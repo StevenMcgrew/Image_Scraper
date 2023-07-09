@@ -66,19 +66,12 @@ function getSrcFromSrcset(srcset, maxW) {
     return currentSrc;
 }
 
-function downloadImages(imgSrcs) {
-    for (const imgSrc of imgSrcs) {
-        const a = document.createElement('a');
-        a.href = imgSrc;
-        a.classList.add('downloadAnchor');
-        a.setAttribute('download', Date.now());
-        a.textContent = imgSrc;
-        document.body.appendChild(a);
-    }
-    // const anchors = [...document.querySelectorAll('.downloadAnchor')];
-    // for (const a of anchors) {
-    //     a.click();
-    // }
+function getHref() {
+    emit({
+        obtainedHref: {
+            href: window.location.href
+        }
+    });
 }
 
 
@@ -90,10 +83,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         getImageSrcs(message.getImageSrcs.maxW);
         return;
     }
-    if (message.downloadImages) {
-        downloadImages(message.downloadImages.selectedImgSrcs);
+    if (message.getHref) {
+        getHref();
+        return;
     }
-    // Optional: sendResponse({message: "goodbye"});
 });
 
 
@@ -102,5 +95,4 @@ Emit outgoing messages
 ***************************************************************************/
 async function emit(message) {
     const response = await chrome.runtime.sendMessage(message);
-    // Optional: do something with response
 }
