@@ -30,14 +30,9 @@ textarea {
     margin: 0;
 }
 
-label,
-fieldset legend {
-    margin: 0;
-}
-
-[type=checkbox],
-[type=radio] {
-    margin: 0;
+label {
+    display: flex;
+    align-items: center;
 }
 
 /****************************************************
@@ -63,8 +58,12 @@ My styles, note: 1rem = 20px
 .select-all-container {
     align-self: end;
     justify-self: start;
-    margin-left: 0.35rem;
+    margin-left: 0.76rem;
     margin-bottom: 0.1rem;
+}
+
+.select-all {
+    margin-bottom: 0;
 }
 
 .center-heading {
@@ -155,11 +154,8 @@ My styles, note: 1rem = 20px
 }
 
 .select-img {
-    padding-left: 0.25rem;
-    padding-top: 0.1rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    padding: 0.23rem 0.25rem;
+    margin: 0;
 }
 
 .img-container {
@@ -220,4 +216,49 @@ My styles, note: 1rem = 20px
 
 .margin-top-5 {
     margin-top: 0.25rem;
+}
+
+.img-details {
+    padding-left: 1.5rem;
+    padding-bottom: 0.3rem;
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.25em 0.4em;
+    font-size: 90%;
+    font-weight: 500;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
+    color: white;
+}
+
+.gray-bg {
+    background-color: #414749;
+}
+
+.blue-bg {
+    background-color: #447c7a;
+}
+
+.yellow-bg {
+    background-color: #9a5519;
+}
+
+.img-checkbox {
+    flex-shrink: 0;
+}
+
+.img-name {
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.img-type {
+    text-transform: uppercase;
 }

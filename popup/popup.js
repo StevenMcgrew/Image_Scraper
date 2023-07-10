@@ -183,7 +183,7 @@ function continueAndFinish() {
         const maxW = Math.round(settingsForm.maxW.value);
         const maxH = Math.round(settingsForm.maxH.value);
         const isResizeAndConvert = settingsForm.isResizeAndConvert.checked;
-        const fileName = getFileName(img.src);
+        let fileName = getFileName(img.src);
         let fileExt = getFileExt(fileName);
         let additionalNote = '';
 
@@ -193,10 +193,11 @@ function continueAndFinish() {
                 const newSize = determineSize(W, H, maxW, maxH);
                 drawToCanvas(canvas, img, newSize.width, newSize.height);
                 img.src = canvas.toDataURL('image/jpeg', 1.0);
-                fileExt = 'jpg';
                 W = newSize.width;
                 H = newSize.height;
                 additionalNote = 'Resized & Converted';
+                fileName = changeFileExtToJpg(fileName);
+                fileExt = 'jpg';
             } else {
                 continue;
             }
@@ -205,8 +206,9 @@ function continueAndFinish() {
                 if (fileExt !== 'jpg' && fileExt !== 'jpeg') {
                     drawToCanvas(canvas, img, W, H);
                     img.src = canvas.toDataURL('image/jpeg', 1.0);
-                    fileExt = 'jpg';
                     additionalNote = 'Converted';
+                    fileName = changeFileExtToJpg(fileName);
+                    fileExt = 'jpg';
                 }
             }
         }
@@ -225,7 +227,10 @@ function continueAndFinish() {
         checkbox.addEventListener('click', toggleFlexItemChecked);
         imgSize.textContent = `${W}x${H}`;
         imgType.textContent = fileExt;
-        imgExtraDetails.textContent = additionalNote;
+        if (additionalNote) {
+            imgExtraDetails.classList.add('yellow-bg');
+            imgExtraDetails.textContent = additionalNote;
+        }
         imgName.textContent = fileName;
         imgName.setAttribute('title', fileName);
         img.classList.add('img-preview');
@@ -278,6 +283,12 @@ function getFileExt(fileName) {
     return fileName.slice(start);
 }
 
+function changeFileExtToJpg(fileName) {
+    const end = fileName.lastIndexOf('.');
+    let newFileName = fileName.slice(0, end);
+    return newFileName += '.jpg';
+}
+
 function changeSrcToHttps(src) {
     let arr = src.split(':');
     arr[0] = 'https';
@@ -294,6 +305,8 @@ function drawToCanvas(canvas, image, width, height) {
     let ctx = canvas.getContext('2d');
     ctx.save();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
     ctx.restore();
 };
