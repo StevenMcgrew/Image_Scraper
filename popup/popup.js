@@ -13,6 +13,31 @@ let imgElements = [];
 let imgCount = 0;
 let href = '';
 
+selectAllCheckbox.addEventListener('change', (e) => {
+    let newChecked;
+    let newOutline;
+    let newBorderColor;
+
+    if (e.target.checked) {
+        newChecked = true;
+        newOutline = '2px solid var(--primary)';
+        newBorderColor = 'transparent';
+    } else {
+        newChecked = false;
+        newOutline = 'none';
+        newBorderColor = 'gray';
+    }
+
+    let items = imgFlexwrap.children;
+    for (const item of items) {
+        const checkbox = item.firstElementChild.firstElementChild;
+        checkbox.checked = newChecked;
+        item.dataset.checked = newChecked.toString();
+        item.style.outline = newOutline;
+        item.style.borderColor = newBorderColor;
+    }
+});
+
 settingsBtn.addEventListener('click', (e) => {
     const settingsModal = document.querySelector('.settings-modal');
     openModal(settingsModal);
@@ -139,9 +164,6 @@ function updateCurrentSettingsList(settings) {
     createFolder.textContent = `Create new folder:  ${settings.isCreateFolder}`;
 
     currSettingsList.replaceChildren(maxSize, resizeAndConvert, createFolder);
-    // currSettingsList.appendChild(maxSize);
-    // currSettingsList.appendChild(resizeAndConvert);
-    // currSettingsList.appendChild(createFolder);
 }
 
 function createImgElements(srcs) {

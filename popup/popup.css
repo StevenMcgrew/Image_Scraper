@@ -45,7 +45,7 @@ My styles, note: 1rem = 20px
     grid-template-rows: auto 1fr auto;
     width: 780px;
     height: 600px;
-    --img-flexwrap-item-width: 20.4rem;
+    --img-flexwrap-item-width: 20.3rem;
     --img-flexwrap-gap: 0.5rem;
     border: 1px solid gray;
 }
@@ -53,13 +53,14 @@ My styles, note: 1rem = 20px
 .my-header {
     padding: 0;
     align-items: center;
+    background-color: #262626;
 }
 
 .select-all-container {
     align-self: end;
     justify-self: start;
     margin-left: 0.76rem;
-    margin-bottom: 0.1rem;
+    margin-bottom: 0.5rem;
 }
 
 .select-all {
@@ -96,7 +97,6 @@ My styles, note: 1rem = 20px
     margin: 6px;
     padding: 8px;
     width: 40px;
-    align-self: end;
     justify-self: end;
     border: none;
     color: var(--h4-color);
