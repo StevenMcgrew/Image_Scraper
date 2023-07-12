@@ -8,12 +8,13 @@ const settingsForm = document.querySelector('.settings-form');
 const canvas = document.querySelector('.canvas');
 const flexItemTemplate = document.querySelector('.flex-item-template');
 const getImagesPanel = document.querySelector('.get-images-panel');
-const selectAllCheckbox = document.querySelector('.select-all');
+const selectAll = document.querySelector('.select-all');
 let imgElements = [];
+let selectionCount = 0;
 let imgCount = 0;
 let href = '';
 
-selectAllCheckbox.addEventListener('change', (e) => {
+selectAll.addEventListener('change', (e) => {
     let newChecked;
     let newOutline;
     let newBorderColor;
@@ -75,6 +76,7 @@ settingsForm.addEventListener('submit', (e) => {
 
 getImagesBtn.addEventListener('click', (e) => {
     getImagesPanel.hidden = true;
+    document.querySelector('.spinner').hidden = false;
     emit({
         getImageSrcs: {
             maxW: Math.round(settingsForm.maxW)
@@ -105,6 +107,15 @@ downloadBtn.addEventListener('click', () => {
         }
     }
 });
+
+function showDownloadBtn(selectionCount) {
+    if (selectionCount === 1) {
+        downloadBtn.textContent = `Download 1 image`;
+    } else {
+        downloadBtn.textContent = `Download ${selectionCount} images`;
+    }
+    downloadBtn.hidden = false;
+}
 
 function openModal(modal) {
     document.documentElement.classList.add('modal-is-open', 'modal-is-opening');
@@ -247,6 +258,7 @@ function continueAndFinish() {
         flexItem.addEventListener('click', toggleChecked);
         checkboxLabel.addEventListener('click', (e) => e.stopPropagation());
         checkbox.addEventListener('click', toggleFlexItemChecked);
+        checkbox.addEventListener('change', trackSelectionCount);
         imgSize.textContent = `${W}x${H}`;
         imgType.textContent = fileExt;
         if (additionalNote) {
@@ -260,16 +272,19 @@ function continueAndFinish() {
         imgFlexwrap.appendChild(flexItem);
     }
 
-    // Show download-btn and select-all
-    selectAllCheckbox.removeAttribute('hidden');
-    downloadBtn.removeAttribute('hidden');
+    // Show download-btn and select-all checkbox
+    document.querySelector('.spinner').hidden = true;
+    const imgCount = imgFlexwrap.childElementCount;
+    document.querySelector('.select-all-span').textContent = `Select All (${imgCount})`;
+    downloadBtn.textContent = `Download 0 images`;
+    selectAll.hidden = false;
 }
 
 function toggleChecked(e) {
     const item = e.currentTarget;
     const checkbox = item.firstElementChild.firstElementChild;
-    checkbox.checked = !checkbox.checked;
-    toggleDatasetChecked(item);
+    checkbox.click();
+    // toggleDatasetChecked(item);
 }
 
 function toggleFlexItemChecked(e) {
@@ -293,6 +308,19 @@ function toggleDatasetChecked(element) {
         element.dataset.checked = 'true';
         element.style.outline = '2px solid var(--primary)';
         element.style.borderColor = 'transparent';
+    }
+}
+
+function trackSelectionCount(e) {
+    if (e.target.checked) {
+        selectionCount++;
+        showDownloadBtn(selectionCount);
+        return;
+    }
+    selectionCount--;
+    showDownloadBtn(selectionCount);
+    if (selectionCount === 0) {
+        downloadBtn.hidden = true;
     }
 }
 
