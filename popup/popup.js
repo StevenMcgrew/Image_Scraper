@@ -259,7 +259,7 @@ function continueAndFinish() {
         checkboxLabel.addEventListener('click', (e) => e.stopPropagation());
         checkbox.addEventListener('click', toggleFlexItemChecked);
         checkbox.addEventListener('change', trackSelectionCount);
-        imgSize.textContent = `${W}x${H}`;
+        imgSize.textContent = `${W} x ${H}`;
         imgType.textContent = fileExt;
         if (additionalNote) {
             imgExtraDetails.classList.add('yellow-bg');

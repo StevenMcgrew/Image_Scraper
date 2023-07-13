@@ -243,11 +243,11 @@ My styles, note: 1rem = 20px
 }
 
 .gray-bg {
-    background-color: #414749;
+    background-color: rgb(117 117 117);
 }
 
-.blue-bg {
-    background-color: #447c7a;
+.dark-gray-bg {
+    background-color: rgb(65, 71, 73);
 }
 
 .yellow-bg {
@@ -265,8 +265,16 @@ My styles, note: 1rem = 20px
     text-overflow: ellipsis;
 }
 
+.img-size {
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+}
+
 .img-type {
     text-transform: uppercase;
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+    margin-left: -0.26rem;
 }
 
 .spinner {
