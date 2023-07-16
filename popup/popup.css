@@ -183,6 +183,7 @@ My styles, note: 1rem = 20px
 
 .settings-header {
     padding: 1rem;
+    margin-bottom: 1rem;
 }
 
 .settings-h3 {
@@ -191,6 +192,7 @@ My styles, note: 1rem = 20px
 
 .settings-footer {
     padding: 0.8rem;
+    margin-top: 0;
 }
 
 .settings-footer>button {
@@ -199,17 +201,33 @@ My styles, note: 1rem = 20px
 
 .settings-form {
     display: grid;
-    grid-template-columns: 1fr repeat(3, auto);
-    grid-template-rows: repeat(5, auto);
+    grid-template-columns: 16.6rem 5.4rem 0.4rem 5.4rem;
+    grid-template-rows: repeat(6, auto);
     row-gap: 15px;
     column-gap: 5px;
     align-items: center;
     font-size: 0.9rem;
+    margin-bottom: 0;
+}
+
+.size-x {
+    align-self: start;
+    padding-top: 0.2rem;
+}
+
+.setting-title {
+    margin: 0;
+}
+
+.setting-description {
+    font-size: 0.7rem;
+    color: #888888;
 }
 
 .num-input {
     max-width: 6rem;
     max-height: 2rem;
+    align-self: start;
 }
 
 .units-label {
@@ -218,6 +236,7 @@ My styles, note: 1rem = 20px
 
 .toggle-switch {
     justify-self: center;
+    align-self: start;
 }
 
 .margin-top-5 {

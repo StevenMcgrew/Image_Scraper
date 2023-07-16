@@ -13,6 +13,15 @@ let imgElements = [];
 let selectionCount = 0;
 let imgCount = 0;
 let href = '';
+let isAltKeyDown = false;
+
+document.addEventListener("keydown", function (e) {
+    isAltKeyDown = true;
+});
+
+document.addEventListener("keyup", function (e) {
+    isAltKeyDown = false;
+});
 
 selectAll.addEventListener('change', (e) => {
     let newChecked;
@@ -224,7 +233,11 @@ function continueAndFinish() {
         if (W > maxW || H > maxH) {
             if (isResizeAndConvert) {
                 const newSize = determineSize(W, H, maxW, maxH);
-                drawToCanvas(canvas, img, newSize.width, newSize.height);
+                if (settingsForm.isMakeSquare) {
+                    drawToSquareCanvas(canvas, img, newSize.width, newSize.height);
+                } else {
+                    drawToCanvas(canvas, img, newSize.width, newSize.height);
+                }
                 img.src = canvas.toDataURL('image/jpeg', 1.0);
                 W = newSize.width;
                 H = newSize.height;
@@ -284,11 +297,12 @@ function toggleChecked(e) {
     const item = e.currentTarget;
     const checkbox = item.firstElementChild.firstElementChild;
     checkbox.click();
-    // toggleDatasetChecked(item);
 }
 
 function toggleFlexItemChecked(e) {
     e.stopPropagation();
+
+
     let currentElement = e.currentTarget;
     while (currentElement.dataset.name !== 'flexItem') {
         currentElement = currentElement.parentElement;
@@ -352,7 +366,7 @@ Image Ops
 function drawToCanvas(canvas, image, width, height) {
     canvas.width = width;
     canvas.height = height;
-    let ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d');
     ctx.save();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = 'white';
@@ -360,6 +374,31 @@ function drawToCanvas(canvas, image, width, height) {
     ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
     ctx.restore();
 };
+
+function drawToSquareCanvas(canvas, image, imgW, imgH) {
+    // Start with square image settings
+    let sideLength = imgW;
+    let dx = 0;
+    let dy = 0;
+    if (imgW > imgH) { // adjust if landscape image
+        sideLength = imgW;
+        dx = 0;
+        dy = Math.round((sideLength - imgH) / 2);
+    } else { // adjust if portrait image
+        sideLength = imgH;
+        dx = Math.round((sideLength - imgW) / 2);
+        dy = 0;
+    }
+    canvas.width = sideLength;
+    canvas.height = sideLength;
+    const ctx = canvas.getContext('2d');
+    ctx.save();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(image, dx, dy, canvas.width, canvas.height);
+    ctx.restore();
+}
 
 function determineSize(w, h, maxW, maxH) {
     if (w > h) { // landscape
