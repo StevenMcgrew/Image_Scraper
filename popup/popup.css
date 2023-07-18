@@ -31,7 +31,7 @@ textarea {
 }
 
 label {
-    display: flex;
+    display: inline-flex;
     align-items: center;
 }
 
@@ -215,10 +215,6 @@ My styles, note: 1rem = 20px
     padding-top: 0.2rem;
 }
 
-.setting-title {
-    margin: 0;
-}
-
 .setting-description {
     font-size: 0.7rem;
     color: #888888;
@@ -302,4 +298,28 @@ My styles, note: 1rem = 20px
     left: 50%;
     transform: translateX(-50%);
     width: 80%;
+}
+
+.info-svg-icon {
+    position: relative;
+    top: -0.2rem;
+    width: 1rem;
+    height: 1rem;
+}
+
+.popover-btn {
+    all: unset;
+}
+
+[popover] {
+    position: fixed;
+    inset: 0;
+    width: 15rem;
+    height: fit-content;
+    margin: auto;
+    border: solid;
+    padding: 0.25em;
+    overflow: auto;
+    color: CanvasText;
+    background-color: Canvas;
 }

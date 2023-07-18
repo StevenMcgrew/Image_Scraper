@@ -93,46 +93,53 @@
                 <span class="units-label">Height (px)</span>
 
                 <div>
-                    <p class="setting-title">Max Image Size</p>
+                    <label>Max Image Size</label>
                 </div>
                 <input type="number" name="maxW" class="num-input" min="1" max="5000" required>
                 <span class="size-x">x</span>
                 <input type="number" name="maxH" class="num-input" min="1" max="5000" required>
 
                 <div class="margin-top-5">
-                    <p class="setting-title">Scale Down Images</p>
-                    <svg fill="#000000" width="64px" height="64px" viewBox="0 0 24 24" id="information-chat" data-name="Line Color" xmlns="http://www.w3.org/2000/svg" class="icon line-color">
-                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.24000000000000005"></g>
-                        <g id="SVGRepo_iconCarrier">
-                            <line id="secondary-upstroke" x1="12.05" y1="8" x2="11.95" y2="8" style="fill: none; stroke: #000000; stroke-linecap: round; stroke-linejoin: round; stroke-width:2.4;"></line>
-                            <line id="secondary" x1="12" y1="13" x2="12" y2="16" style="fill: none; stroke: #000000; stroke-linecap: round; stroke-linejoin: round; stroke-width:2.4;"></line>
-                            <path id="primary" d="M10.54,3.11A9,9,0,0,0,4,16.11l-.7,3.41A1,1,0,0,0,4.48,20.7L7.87,20h0A9,9,0,1,0,10.54,3.11Z" style="fill: none; stroke: #000000; stroke-linecap: round; stroke-linejoin: round; stroke-width:2.4;"></path>
-                        </g>
-                    </svg>
-                    <!-- <p class="setting-description">If larger than max, convert to jpg and scale to fit</p> -->
+                    <label>Scale Down Images</label>
+                    <button type="button" class="popover-btn" popovertarget="scale-down-popover">
+                        <svg class="info-svg-icon" fill="white" width="64px" height="64px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <g>
+                                <line x1="12.05" y1="8" x2="11.95" y2="8" style="fill: none; stroke: white; stroke-linecap: round; stroke-linejoin: round; stroke-width:2.4;"></line>
+                                <line x1="12" y1="13" x2="12" y2="16" style="fill: none; stroke: white; stroke-linecap: round; stroke-linejoin: round; stroke-width:2.4;"></line>
+                                <path d="M10.54,3.11A9,9,0,0,0,4,16.11l-.7,3.41A1,1,0,0,0,4.48,20.7L7.87,20h0A9,9,0,1,0,10.54,3.11Z" style="fill: none; stroke: white; stroke-linecap: round; stroke-linejoin: round; stroke-width:2.4;"></path>
+                            </g>
+                        </svg>
+                    </button>
+                    <div id="scale-down-popover" popover>If the image is larger than the max setting, scale it down to fit. *Image is converted to jpg during this process*</div>
                 </div>
                 <div></div>
                 <div></div>
                 <input type="checkbox" name="isScaleDown" role="switch" class="margin-top-5 toggle-switch">
 
                 <div class="margin-top-5">
-                    <p class="setting-title">Convert To JPG</p>
+                    <label>Convert To JPG</label>
                 </div>
                 <div></div>
                 <div></div>
                 <input type="checkbox" name="isConvertToJPG" role="switch" class="margin-top-5 toggle-switch">
 
                 <div class="margin-top-5">
-                    <p class="setting-title">Make Images Square</p>
+                    <label>Make Images Square</label>
                 </div>
                 <div></div>
                 <div></div>
                 <input type="checkbox" name="isSquareImages" role="switch" class="margin-top-5 toggle-switch">
 
                 <div class="margin-top-5">
-                    <p class="setting-title">Create New Folder</p>
-                    <p class="setting-description">Create a new folder upon download</p>
+                    <label>Create New Folder</label>
+                    <svg class="info-svg-icon" fill="white" width="64px" height="64px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <g>
+                            <line x1="12.05" y1="8" x2="11.95" y2="8" style="fill: none; stroke: white; stroke-linecap: round; stroke-linejoin: round; stroke-width:2.4;"></line>
+                            <line x1="12" y1="13" x2="12" y2="16" style="fill: none; stroke: white; stroke-linecap: round; stroke-linejoin: round; stroke-width:2.4;"></line>
+                            <path d="M10.54,3.11A9,9,0,0,0,4,16.11l-.7,3.41A1,1,0,0,0,4.48,20.7L7.87,20h0A9,9,0,1,0,10.54,3.11Z" style="fill: none; stroke: white; stroke-linecap: round; stroke-linejoin: round; stroke-width:2.4;"></path>
+                        </g>
+                    </svg>
+                    <!-- <p class="setting-description">Create a new folder upon download</p> -->
                 </div>
                 <div></div>
                 <div></div>
