@@ -59,7 +59,7 @@ editSettings.addEventListener('click', (e) => {
 });
 
 cancelModalBtn.addEventListener('click', (e) => {
-    setSettings();
+    setSettingsForm();
     const settingsModal = document.querySelector('.settings-modal');
     closeModal(settingsModal);
 });
@@ -71,7 +71,9 @@ settingsForm.addEventListener('submit', (e) => {
     const settings = {
         maxW: settingsForm.maxW.value,
         maxH: settingsForm.maxH.value,
-        isResizeAndConvert: settingsForm.isResizeAndConvert.checked,
+        isScaleDown: settingsForm.isScaleDown.checked,
+        isConvertToJPG: settingsForm.isConvertToJPG.checked,
+        isMakeSquare: settingsForm.isMakeSquare.checked,
         isCreateFolder: settingsForm.isCreateFolder.checked
     };
 
@@ -161,29 +163,34 @@ function getFileName(href) {
     return pathname.slice(start);
 }
 
-
-function setSettings() {
+function setSettingsForm() {
     chrome.storage.sync.get(null)
         .then((result) => {
-            settingsForm.maxW.value = Math.round(result.maxW);
-            settingsForm.maxH.value = Math.round(result.maxH);
-            settingsForm.isResizeAndConvert.checked = result.isResizeAndConvert;
-            settingsForm.isCreateFolder.checked = result.isCreateFolder;
-            updateCurrentSettingsList(result);
+            settingsForm.maxW.value = Math.round(result.maxW) || 5000;
+            settingsForm.maxH.value = Math.round(result.maxH) || 5000;
+            settingsForm.isScaleDown.checked = result.isScaleDown || false;
+            settingsForm.isConvertToJPG.checked = result.isConvertToJPG || false;
+            settingsForm.isMakeSquare.checked = result.isMakeSquare || false;
+            settingsForm.isCreateFolder.checked = result.isCreateFolder || false;
+            updateCurrentSettingsList();
         });
 }
 
-function updateCurrentSettingsList(settings) {
+function updateCurrentSettingsList() {
     const currSettingsList = document.querySelector('.current-settings-list');
     const maxSize = document.createElement('li');
-    const resizeAndConvert = document.createElement('li');
+    const scaleDown = document.createElement('li');
+    const convert = document.createElement('li');
+    const square = document.createElement('li');
     const createFolder = document.createElement('li');
 
-    maxSize.textContent = `Max size:  ${settings.maxW} x ${settings.maxH}`;
-    resizeAndConvert.textContent = `Resize and convert:  ${settings.isResizeAndConvert}`;
-    createFolder.textContent = `Create new folder:  ${settings.isCreateFolder}`;
+    maxSize.textContent = `Max Image Size:  ${settingsForm.maxW.value} x ${settingsForm.maxH.value}`;
+    scaleDown.textContent = `Scale Down Images:  ${settingsForm.isScaleDown.checked}`;
+    convert.textContent = `Convert To JPG:  ${settingsForm.isConvertToJPG.checked}`;
+    square.textContent = `Make Images Square:  ${settingsForm.isMakeSquare.checked}`;
+    createFolder.textContent = `Create new folder:  ${settingsForm.isCreateFolder.checked}`;
 
-    currSettingsList.replaceChildren(maxSize, resizeAndConvert, createFolder);
+    currSettingsList.replaceChildren(maxSize, scaleDown, convert, square, createFolder);
 }
 
 function createImgElements(srcs) {
@@ -224,37 +231,48 @@ function continueAndFinish() {
         let H = img.naturalHeight;
         const maxW = Math.round(settingsForm.maxW.value);
         const maxH = Math.round(settingsForm.maxH.value);
-        const isResizeAndConvert = settingsForm.isResizeAndConvert.checked;
         let fileName = getFileName(img.src);
         let fileExt = getFileExt(fileName);
         let additionalNote = '';
 
         // Resizing and converting
         if (W > maxW || H > maxH) {
-            if (isResizeAndConvert) {
-                const newSize = determineSize(W, H, maxW, maxH);
-                if (settingsForm.isMakeSquare) {
-                    drawToSquareCanvas(canvas, img, newSize.width, newSize.height);
-                } else {
-                    drawToCanvas(canvas, img, newSize.width, newSize.height);
-                }
-                img.src = canvas.toDataURL('image/jpeg', 1.0);
-                W = newSize.width;
-                H = newSize.height;
-                additionalNote = 'Resized & Converted';
-                fileName = changeFileExtToJpg(fileName);
-                fileExt = 'jpg';
-            } else {
+            if (!settingsForm.isScaleDown.checked) {
                 continue;
             }
+            const newSize = determineSize(W, H, maxW, maxH);
+            W = newSize.width;
+            H = newSize.height;
+            if (fileExt !== 'jpg' && fileExt !== 'jpeg') {
+                fileName = changeFileExtToJpg(fileName);
+                fileExt = 'jpg';
+                additionalNote += 'Converted & ';
+            }
+            if (settingsForm.isMakeSquare.checked && W !== H) {
+                drawToSquareCanvas(canvas, img, W, H);
+                additionalNote += 'Resized & Squared';
+            } else {
+                drawToCanvas(canvas, img, W, H);
+                additionalNote += 'Resized';
+            }
+            img.src = canvas.toDataURL('image/jpeg', 1.0);
         } else {
-            if (isResizeAndConvert) {
+            if (settingsForm.isMakeSquare.checked && W !== H) {
+                drawToSquareCanvas(canvas, img, W, H);
+                img.src = canvas.toDataURL('image/jpeg', 1.0);
                 if (fileExt !== 'jpg' && fileExt !== 'jpeg') {
-                    drawToCanvas(canvas, img, W, H);
-                    img.src = canvas.toDataURL('image/jpeg', 1.0);
-                    additionalNote = 'Converted';
                     fileName = changeFileExtToJpg(fileName);
                     fileExt = 'jpg';
+                    additionalNote += 'Converted & ';
+                }
+                additionalNote += 'Squared';
+            } else {
+                if (fileExt !== 'jpg' && fileExt !== 'jpeg' && settingsForm.isConvertToJPG.checked) {
+                    drawToCanvas(canvas, img, W, H);
+                    img.src = canvas.toDataURL('image/jpeg', 1.0);
+                    fileName = changeFileExtToJpg(fileName);
+                    fileExt = 'jpg';
+                    additionalNote += 'Converted';
                 }
             }
         }
@@ -384,7 +402,7 @@ function drawToSquareCanvas(canvas, image, imgW, imgH) {
         sideLength = imgW;
         dx = 0;
         dy = Math.round((sideLength - imgH) / 2);
-    } else { // adjust if portrait image
+    } else if (imgH > imgW) { // adjust if portrait image
         sideLength = imgH;
         dx = Math.round((sideLength - imgW) / 2);
         dy = 0;
@@ -396,7 +414,7 @@ function drawToSquareCanvas(canvas, image, imgW, imgH) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(image, dx, dy, canvas.width, canvas.height);
+    ctx.drawImage(image, dx, dy, imgW, imgH);
     ctx.restore();
 }
 
@@ -466,7 +484,7 @@ async function emit(message) {
 /**************************************************************************
 On load
 ***************************************************************************/
-setSettings();
+setSettingsForm();
 emit({
     getHref: {}
 });

@@ -110,7 +110,7 @@
                             </g>
                         </svg>
                     </button>
-                    <div id="scale-down-popover" popover>If the image is larger than the max setting, scale it down to fit. *Image is converted to jpg during this process*</div>
+                    <div id="scale-down-popover" popover>If the image is larger than the max setting, scale it down to fit. *Any image that needs resizing will be converted to JPG.</div>
                 </div>
                 <div></div>
                 <div></div>
@@ -128,18 +128,20 @@
                 </div>
                 <div></div>
                 <div></div>
-                <input type="checkbox" name="isSquareImages" role="switch" class="margin-top-5 toggle-switch">
+                <input type="checkbox" name="isMakeSquare" role="switch" class="margin-top-5 toggle-switch">
 
                 <div class="margin-top-5">
                     <label>Create New Folder</label>
-                    <svg class="info-svg-icon" fill="white" width="64px" height="64px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <g>
-                            <line x1="12.05" y1="8" x2="11.95" y2="8" style="fill: none; stroke: white; stroke-linecap: round; stroke-linejoin: round; stroke-width:2.4;"></line>
-                            <line x1="12" y1="13" x2="12" y2="16" style="fill: none; stroke: white; stroke-linecap: round; stroke-linejoin: round; stroke-width:2.4;"></line>
-                            <path d="M10.54,3.11A9,9,0,0,0,4,16.11l-.7,3.41A1,1,0,0,0,4.48,20.7L7.87,20h0A9,9,0,1,0,10.54,3.11Z" style="fill: none; stroke: white; stroke-linecap: round; stroke-linejoin: round; stroke-width:2.4;"></path>
-                        </g>
-                    </svg>
-                    <!-- <p class="setting-description">Create a new folder upon download</p> -->
+                    <button type="button" class="popover-btn" popovertarget="create-folder-popover">
+                        <svg class="info-svg-icon" fill="white" width="64px" height="64px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <g>
+                                <line x1="12.05" y1="8" x2="11.95" y2="8" style="fill: none; stroke: white; stroke-linecap: round; stroke-linejoin: round; stroke-width:2.4;"></line>
+                                <line x1="12" y1="13" x2="12" y2="16" style="fill: none; stroke: white; stroke-linecap: round; stroke-linejoin: round; stroke-width:2.4;"></line>
+                                <path d="M10.54,3.11A9,9,0,0,0,4,16.11l-.7,3.41A1,1,0,0,0,4.48,20.7L7.87,20h0A9,9,0,1,0,10.54,3.11Z" style="fill: none; stroke: white; stroke-linecap: round; stroke-linejoin: round; stroke-width:2.4;"></path>
+                            </g>
+                        </svg>
+                    </button>
+                    <div id="create-folder-popover" popover>Normally, images are downloaded to the default folder. If you want them to be grouped together in their own folder, then turn this setting on.</div>
                 </div>
                 <div></div>
                 <div></div>

@@ -201,13 +201,13 @@ My styles, note: 1rem = 20px
 
 .settings-form {
     display: grid;
-    grid-template-columns: 16.6rem 5.4rem 0.4rem 5.4rem;
+    grid-template-columns: 11rem 5.4rem 0.4rem 5.4rem;
     grid-template-rows: repeat(6, auto);
     row-gap: 15px;
     column-gap: 5px;
     align-items: center;
     font-size: 0.9rem;
-    margin-bottom: 0;
+    margin-bottom: 1rem;
 }
 
 .size-x {
@@ -309,6 +309,8 @@ My styles, note: 1rem = 20px
 
 .popover-btn {
     all: unset;
+    cursor: help;
+    pointer-events: all;
 }
 
 [popover] {
@@ -317,9 +319,15 @@ My styles, note: 1rem = 20px
     width: 15rem;
     height: fit-content;
     margin: auto;
-    border: solid;
-    padding: 0.25em;
-    overflow: auto;
-    color: CanvasText;
-    background-color: Canvas;
+    border: none;
+    border-radius: var(--border-radius);
+    padding: 0.25rem 0.5rem;
+    overflow: hidden;
+    color: var(--tooltip-color);
+    background-color: var(--tooltip-background-color);
+    cursor: help;
+    font-style: normal;
+    font-weight: var(--font-weight);
+    font-size: 0.875rem;
+    text-decoration: none;
 }
