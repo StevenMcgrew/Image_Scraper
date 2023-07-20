@@ -195,9 +195,6 @@ function updateCurrentSettingsList() {
 
 function createImgElements(srcs) {
     for (let src of srcs) {
-        if (src.startsWith('http:')) {
-            src = changeSrcToHttps(src);
-        }
         const img = document.createElement('img');
         img.onerror = (e) => { handleImgLoadError(e, srcs.length); };
         img.onload = (e) => { pushAndContinue(e, srcs.length); };
@@ -255,11 +252,23 @@ function continueAndFinish() {
                 drawToCanvas(canvas, img, W, H);
                 additionalNote += 'Resized';
             }
-            img.src = canvas.toDataURL('image/jpeg', 1.0);
+            try {
+                img.src = canvas.toDataURL('image/jpeg', 1.0);
+            } catch (error) {
+                console.log('canvas.toDataURL error on this src:  ', img.src);
+                console.log(error);
+                continue;
+            }
         } else {
             if (settingsForm.isMakeSquare.checked && W !== H) {
                 drawToSquareCanvas(canvas, img, W, H);
-                img.src = canvas.toDataURL('image/jpeg', 1.0);
+                try {
+                    img.src = canvas.toDataURL('image/jpeg', 1.0);
+                } catch (error) {
+                    console.log('canvas.toDataURL error on this src:  ', img.src);
+                    console.log(error);
+                    continue;
+                }
                 if (fileExt !== 'jpg' && fileExt !== 'jpeg') {
                     fileName = changeFileExtToJpg(fileName);
                     fileExt = 'jpg';
@@ -269,7 +278,13 @@ function continueAndFinish() {
             } else {
                 if (fileExt !== 'jpg' && fileExt !== 'jpeg' && settingsForm.isConvertToJPG.checked) {
                     drawToCanvas(canvas, img, W, H);
-                    img.src = canvas.toDataURL('image/jpeg', 1.0);
+                    try {
+                        img.src = canvas.toDataURL('image/jpeg', 1.0);
+                    } catch (error) {
+                        console.log('canvas.toDataURL error on this src:  ', img.src);
+                        console.log(error);
+                        continue;
+                    }
                     fileName = changeFileExtToJpg(fileName);
                     fileExt = 'jpg';
                     additionalNote += 'Converted';
@@ -369,12 +384,6 @@ function changeFileExtToJpg(fileName) {
     const end = fileName.lastIndexOf('.');
     let newFileName = fileName.slice(0, end);
     return newFileName += '.jpg';
-}
-
-function changeSrcToHttps(src) {
-    let arr = src.split(':');
-    arr[0] = 'https';
-    return arr.join(':');
 }
 
 

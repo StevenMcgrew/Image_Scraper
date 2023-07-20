@@ -28,16 +28,24 @@ function getImageSrcs(maxW) {
     const images = [...document.images];
 
     for (const img of images) {
+        let imgSrc = '';
         if (img.srcset) {
-            const src = getSrcFromSrcset(img.srcset, maxW);
-            if (src) {
-                imgSrcs.add(src);
-                continue;
-            }
+            imgSrc = getSrcFromSrcset(img.srcset, maxW);
+        } else if (img.src && !imgSrc) {
+            imgSrc = img.src;
         }
-        if (img.src) {
-            imgSrcs.add(img.src);
+        if (imgSrc.startsWith('https:')) {
+            // do nothing (this will skip the remaining "else if"'s)
+        } else if (imgSrc.startsWith('/')) {
+            imgSrc = window.location.origin + imgSrc;
+        } else if (imgSrc.startsWith('//')) {
+            imgSrc = 'https:' + imgSrc;
+        } else if (imgSrc.startsWith('http:')) {
+            imgSrc = changeSrcToHttps(imgSrc);
+        } else { // default case (should be a relative path without a '/' since the other things were eliminated)
+            // TODO: set imgSrc to proper value (current page address without # or ? + imgSrc)
         }
+        imgSrcs.add(imgSrc);
     }
 
     emit({
@@ -72,6 +80,12 @@ function getHref() {
             href: window.location.href
         }
     });
+}
+
+function changeSrcToHttps(src) {
+    let arr = src.split(':');
+    arr[0] = 'https';
+    return arr.join(':');
 }
 
 
