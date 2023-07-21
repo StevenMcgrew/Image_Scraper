@@ -226,6 +226,11 @@ function continueAndFinish() {
 
         let W = img.naturalWidth;
         let H = img.naturalHeight;
+
+        if (W < 5 || H < 5) {
+            continue;
+        }
+
         const maxW = Math.round(settingsForm.maxW.value);
         const maxH = Math.round(settingsForm.maxH.value);
         let fileName = getFileName(img.src);
@@ -247,6 +252,8 @@ function continueAndFinish() {
             }
             if (settingsForm.isMakeSquare.checked && W !== H) {
                 drawToSquareCanvas(canvas, img, W, H);
+                W = (W > H) ? W : H;
+                H = W;
                 additionalNote += 'Resized & Squared';
             } else {
                 drawToCanvas(canvas, img, W, H);
@@ -262,6 +269,8 @@ function continueAndFinish() {
         } else {
             if (settingsForm.isMakeSquare.checked && W !== H) {
                 drawToSquareCanvas(canvas, img, W, H);
+                W = (W > H) ? W : H;
+                H = W;
                 try {
                     img.src = canvas.toDataURL('image/jpeg', 1.0);
                 } catch (error) {
