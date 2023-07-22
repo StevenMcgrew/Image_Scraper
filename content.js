@@ -1,52 +1,66 @@
 function getImageSrcs(maxW) {
     const imgSrcs = new Set();
+    const elements = [...document.body.getElementsByTagName("*")];
 
-    // const elements = [...document.body.getElementsByTagName("*")];
-
-    // for (const el of elements) {
-    //     if (el.tagName !== 'IMG') {
-    //         continue;
-    //     }
-
-    //     if (el.srcset) {
-
-    //         continue;
-    //     }
-
-    //     if (el.src) {
-
-    //         continue;
-    //     }
-
-    //     TODO: handle <picture><source> elements
-    //     TODO: handle shadowRoot elements
-    //     TODO: handle input's of type image (submit buttons that use an image)
-    //     TODO: handle anchor's that link to images (href ends in .jpg, for example)
-    //     TODO: handle css background-image and background
-    // }
-
-    const images = [...document.images];
-
-    for (const img of images) {
+    for (const el of elements) {
         let imgSrc = '';
-        if (img.srcset) {
-            imgSrc = getSrcFromSrcset(img.srcset, maxW);
-        } else if (img.src && !imgSrc) {
-            imgSrc = img.src;
+
+        if (el.tagName === 'IMG' || el.tagName === 'SOURCE') {
+            if (el.srcset) {
+                imgSrc = getSrcFromSrcset(el.srcset, maxW);
+            }
+            if (el.src && !imgSrc) {
+                imgSrc = el.src;
+            }
         }
+        else if (el.style.background || el.style.backgroundImage) {
+            // TODO: handle css background-image and background
+        }
+
         if (imgSrc.startsWith('https:')) {
-            // do nothing (this will skip the remaining "else if"'s)
-        } else if (imgSrc.startsWith('/')) {
-            imgSrc = window.location.origin + imgSrc;
+            // do nothing (we need eliminate this for the rest of the checks)
         } else if (imgSrc.startsWith('//')) {
             imgSrc = 'https:' + imgSrc;
+        } else if (imgSrc.startsWith('/')) {
+            imgSrc = window.location.origin + imgSrc;
         } else if (imgSrc.startsWith('http:')) {
             imgSrc = changeSrcToHttps(imgSrc);
         } else { // default case (should be a relative path without a '/' since the other things were eliminated)
             // TODO: set imgSrc to proper value (current page address without # or ? + imgSrc)
         }
+
         imgSrcs.add(imgSrc);
+
+        // TODO: handle shadowRoot elements
+        // TODO: handle input's of type image (submit buttons that use an image)
+        // TODO: handle anchor's that link to images (href ends in .jpg, for example)
     }
+
+    // const images = [...document.images];
+
+    // for (const img of images) {
+    //     let imgSrc = '';
+
+    //     if (img.srcset) {
+    //         imgSrc = getSrcFromSrcset(img.srcset, maxW);
+    //     } else if (img.src && !imgSrc) {
+    //         imgSrc = img.src;
+    //     }
+
+    //     if (imgSrc.startsWith('https:')) {
+    //         // do nothing (this will skip the remaining "else if"'s)
+    //     } else if (imgSrc.startsWith('//')) {
+    //         imgSrc = 'https:' + imgSrc;
+    //     } else if (imgSrc.startsWith('/')) {
+    //         imgSrc = window.location.origin + imgSrc;
+    //     } else if (imgSrc.startsWith('http:')) {
+    //         imgSrc = changeSrcToHttps(imgSrc);
+    //     } else { // default case (should be a relative path without a '/' since the other things were eliminated)
+    //         // TODO: set imgSrc to proper value (current page address without # or ? + imgSrc)
+    //     }
+
+    //     imgSrcs.add(imgSrc);
+    // }
 
     emit({
         foundImgSrcs: {
