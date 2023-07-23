@@ -13,8 +13,8 @@ function getImageSrcs(maxW) {
                 imgSrc = el.src;
             }
         }
-        else if (el.style.background || el.style.backgroundImage) {
-            // TODO: handle css background-image and background
+        else {
+            imgSrc = getBackgroundImageURL(el);
         }
 
         if (imgSrc.startsWith('https:')) {
@@ -26,14 +26,10 @@ function getImageSrcs(maxW) {
         } else if (imgSrc.startsWith('http:')) {
             imgSrc = changeSrcToHttps(imgSrc);
         } else { // default case (should be a relative path without a '/' since the other things were eliminated)
-            // TODO: set imgSrc to proper value (current page address without # or ? + imgSrc)
+            imgSrc = window.location.origin + window.location.pathname + imgSrc;
         }
 
         imgSrcs.add(imgSrc);
-
-        // TODO: handle shadowRoot elements
-        // TODO: handle input's of type image (submit buttons that use an image)
-        // TODO: handle anchor's that link to images (href ends in .jpg, for example)
     }
 
     // const images = [...document.images];
@@ -86,6 +82,13 @@ function getSrcFromSrcset(srcset, maxW) {
         }
     }
     return currentSrc;
+}
+
+function getBackgroundImageURL(element) {
+    const bgImage = window.getComputedStyle(element).backgroundImage;
+    const start = bgImage.indexOf('url("') + 5;
+    const end = bgImage.indexOf('"', start + 1);
+    return bgImage.slice(start, end);
 }
 
 function getHref() {

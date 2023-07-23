@@ -46,13 +46,7 @@
 
         <div class="get-images-panel">
             <button class="get-images-btn">Get Images</button>
-            <div class="current-settings-container">
-                <span>Current Settings:</span>
-                <ul class="current-settings-list">
-
-                </ul>
-                <a class="edit-settings">Edit Settings</a>
-            </div>
+            <a class="edit-settings">Change Settings</a>
         </div>
 
         <div class="img-flexwrap">
@@ -100,48 +94,68 @@
                 <input type="number" name="maxH" class="num-input" min="1" max="5000" required>
 
                 <div class="margin-top-5">
-                    <span>Scale Down Images</span>
+                    <span>Resize (and Convert)</span>
                     <button type="button" class="popover-btn" popovertarget="scale-down-popover">
-                        <svg class="info-svg-icon" fill="white" width="64px" height="64px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <svg class="info-svg-icon" fill="currentColor" width="64px" height="64px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <g>
-                                <line x1="12.05" y1="8" x2="11.95" y2="8" style="fill: none; stroke: white; stroke-linecap: round; stroke-linejoin: round; stroke-width:2.4;"></line>
-                                <line x1="12" y1="13" x2="12" y2="16" style="fill: none; stroke: white; stroke-linecap: round; stroke-linejoin: round; stroke-width:2.4;"></line>
-                                <path d="M10.54,3.11A9,9,0,0,0,4,16.11l-.7,3.41A1,1,0,0,0,4.48,20.7L7.87,20h0A9,9,0,1,0,10.54,3.11Z" style="fill: none; stroke: white; stroke-linecap: round; stroke-linejoin: round; stroke-width:2.4;"></path>
+                                <line x1="12.05" y1="8" x2="11.95" y2="8" style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width:2.4;"></line>
+                                <line x1="12" y1="13" x2="12" y2="16" style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width:2.4;"></line>
+                                <path d="M10.54,3.11A9,9,0,0,0,4,16.11l-.7,3.41A1,1,0,0,0,4.48,20.7L7.87,20h0A9,9,0,1,0,10.54,3.11Z" style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width:2.4;"></path>
                             </g>
                         </svg>
                     </button>
-                    <div id="scale-down-popover" popover>If the image is larger than the max setting, scale it down to fit. *Any image that needs resizing will be converted to JPG.</div>
+                    <div id="scale-down-popover" popover>If the image is larger than the max setting, resize it to fit within the max (this process requires conversion to JPG).</div>
                 </div>
                 <div></div>
                 <div></div>
                 <input type="checkbox" name="isScaleDown" role="switch" class="margin-top-5 toggle-switch">
 
                 <div class="margin-top-5">
-                    <span>Convert To JPG</span>
-                </div>
-                <div></div>
-                <div></div>
-                <input type="checkbox" name="isConvertToJPG" role="switch" class="margin-top-5 toggle-switch">
-
-                <div class="margin-top-5">
-                    <span>Make Images Square</span>
+                    <span>Square (and Convert)</span>
+                    <button type="button" class="popover-btn" popovertarget="make-square-popover">
+                        <svg class="info-svg-icon" fill="currentColor" width="64px" height="64px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <g>
+                                <line x1="12.05" y1="8" x2="11.95" y2="8" style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width:2.4;"></line>
+                                <line x1="12" y1="13" x2="12" y2="16" style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width:2.4;"></line>
+                                <path d="M10.54,3.11A9,9,0,0,0,4,16.11l-.7,3.41A1,1,0,0,0,4.48,20.7L7.87,20h0A9,9,0,1,0,10.54,3.11Z" style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width:2.4;"></path>
+                            </g>
+                        </svg>
+                    </button>
+                    <div id="make-square-popover" popover>If you want the images to be square, this setting will add white space to accomplish that (this process requires conversion to JPG).</div>
                 </div>
                 <div></div>
                 <div></div>
                 <input type="checkbox" name="isMakeSquare" role="switch" class="margin-top-5 toggle-switch">
 
                 <div class="margin-top-5">
-                    <span>Create New Folder</span>
-                    <button type="button" class="popover-btn" popovertarget="create-folder-popover">
-                        <svg class="info-svg-icon" fill="white" width="64px" height="64px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <span>Convert To JPG</span>
+                    <button type="button" class="popover-btn" popovertarget="convert-popover">
+                        <svg class="info-svg-icon" fill="currentColor" width="64px" height="64px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <g>
-                                <line x1="12.05" y1="8" x2="11.95" y2="8" style="fill: none; stroke: white; stroke-linecap: round; stroke-linejoin: round; stroke-width:2.4;"></line>
-                                <line x1="12" y1="13" x2="12" y2="16" style="fill: none; stroke: white; stroke-linecap: round; stroke-linejoin: round; stroke-width:2.4;"></line>
-                                <path d="M10.54,3.11A9,9,0,0,0,4,16.11l-.7,3.41A1,1,0,0,0,4.48,20.7L7.87,20h0A9,9,0,1,0,10.54,3.11Z" style="fill: none; stroke: white; stroke-linecap: round; stroke-linejoin: round; stroke-width:2.4;"></path>
+                                <line x1="12.05" y1="8" x2="11.95" y2="8" style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width:2.4;"></line>
+                                <line x1="12" y1="13" x2="12" y2="16" style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width:2.4;"></line>
+                                <path d="M10.54,3.11A9,9,0,0,0,4,16.11l-.7,3.41A1,1,0,0,0,4.48,20.7L7.87,20h0A9,9,0,1,0,10.54,3.11Z" style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width:2.4;"></path>
                             </g>
                         </svg>
                     </button>
-                    <div id="create-folder-popover" popover>Normally, images are downloaded to the default folder. If you want them to be grouped together in their own folder, then turn this setting on.</div>
+                    <div id="convert-popover" popover>Regardless of resizing or squaring, convert all non-JPG images to JPG.</div>
+                </div>
+                <div></div>
+                <div></div>
+                <input type="checkbox" name="isConvertToJPG" role="switch" class="margin-top-5 toggle-switch">
+
+                <div class="margin-top-5">
+                    <span>Create New Folder</span>
+                    <button type="button" class="popover-btn" popovertarget="create-folder-popover">
+                        <svg class="info-svg-icon" fill="currentColor" width="64px" height="64px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <g>
+                                <line x1="12.05" y1="8" x2="11.95" y2="8" style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width:2.4;"></line>
+                                <line x1="12" y1="13" x2="12" y2="16" style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width:2.4;"></line>
+                                <path d="M10.54,3.11A9,9,0,0,0,4,16.11l-.7,3.41A1,1,0,0,0,4.48,20.7L7.87,20h0A9,9,0,1,0,10.54,3.11Z" style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width:2.4;"></path>
+                            </g>
+                        </svg>
+                    </button>
+                    <div id="create-folder-popover" popover>If you want the images to be grouped together in their own folder (instead of the default folder), then turn this setting on.</div>
                 </div>
                 <div></div>
                 <div></div>

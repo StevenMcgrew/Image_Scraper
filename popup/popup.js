@@ -81,7 +81,6 @@ settingsForm.addEventListener('submit', (e) => {
         .then(() => {
             const settingsModal = document.querySelector('.settings-modal');
             closeModal(settingsModal);
-            updateCurrentSettingsList(settings);
         });
 });
 
@@ -95,14 +94,12 @@ getImagesBtn.addEventListener('click', (e) => {
     });
 });
 
-downloadBtn.addEventListener('click', () => {
-    // if new folder, set folder name
+downloadBtn.addEventListener('click', (e) => {
     let folderNameWithSlash = '';
     if (settingsForm.isCreateFolder.checked) {
         folderNameWithSlash = getFolderName(href) + '/';
     }
 
-    // iterate flex-items
     let items = imgFlexwrap.children;
     for (const item of items) {
         if (item.dataset.checked === 'true') {
@@ -172,25 +169,7 @@ function setSettingsForm() {
             settingsForm.isConvertToJPG.checked = result.isConvertToJPG || false;
             settingsForm.isMakeSquare.checked = result.isMakeSquare || false;
             settingsForm.isCreateFolder.checked = result.isCreateFolder || false;
-            updateCurrentSettingsList();
         });
-}
-
-function updateCurrentSettingsList() {
-    const currSettingsList = document.querySelector('.current-settings-list');
-    const maxSize = document.createElement('li');
-    const scaleDown = document.createElement('li');
-    const convert = document.createElement('li');
-    const square = document.createElement('li');
-    const createFolder = document.createElement('li');
-
-    maxSize.textContent = `Max Image Size:  ${settingsForm.maxW.value} x ${settingsForm.maxH.value}`;
-    scaleDown.textContent = `Scale Down Images:  ${settingsForm.isScaleDown.checked}`;
-    convert.textContent = `Convert To JPG:  ${settingsForm.isConvertToJPG.checked}`;
-    square.textContent = `Make Images Square:  ${settingsForm.isMakeSquare.checked}`;
-    createFolder.textContent = `Create new folder:  ${settingsForm.isCreateFolder.checked}`;
-
-    currSettingsList.replaceChildren(maxSize, scaleDown, convert, square, createFolder);
 }
 
 function createImgElements(srcs) {

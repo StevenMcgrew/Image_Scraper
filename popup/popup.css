@@ -8,16 +8,6 @@ Adjustments to pico.css
     }
 }
 
-@media only screen and (prefers-color-scheme: dark) {
-    :root:not([data-theme]) {
-        --background-color: rgb(24, 26, 27)
-    }
-}
-
-[data-theme=dark] {
-    --background-color: rgb(24, 26, 27)
-}
-
 input:not([type=checkbox], [type=radio]),
 select,
 textarea {
@@ -59,7 +49,8 @@ My styles, note: 1rem = 20px
 .my-header {
     padding: 0;
     align-items: center;
-    background-color: black;
+    background-color: var(--card-sectionning-background-color);
+    border-bottom: var(--border-width) solid var(--card-border-color);
 }
 
 .select-all-container {
@@ -124,25 +115,22 @@ My styles, note: 1rem = 20px
 }
 
 .get-images-panel {
-    position: absolute;
-    top: 35%;
-    transform: translateY(-50%);
-    left: 50%;
-    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    margin-top: -1rem;
 }
 
-.current-settings-container>* {
-    font-size: 0.9rem;
-}
-
-.current-settings-list {
-    margin-top: 0.2rem;
-    margin-bottom: 0;
+.get-images-btn {
+    width: 10rem;
 }
 
 .edit-settings {
     cursor: pointer;
     text-decoration: none;
+    font-size: 0.8rem;
 }
 
 .img-flexwrap {
@@ -157,6 +145,7 @@ My styles, note: 1rem = 20px
     border: 1px solid gray;
     border-radius: var(--border-radius);
     overflow: hidden;
+    background-color: var(--card-sectionning-background-color);
 }
 
 .select-img {
@@ -167,13 +156,20 @@ My styles, note: 1rem = 20px
 .img-container {
     width: var(--img-flexwrap-item-width);
     height: var(--img-flexwrap-item-width);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .img-preview {
-    width: var(--img-flexwrap-item-width);
+    /* width: var(--img-flexwrap-item-width);
     height: var(--img-flexwrap-item-width);
     object-fit: scale-down;
-    object-position: center;
+    object-position: center; */
+    background-image: var(--my-transparency-indicator);
+    background-size: 26px 26px;
+    background-position: 0 0, 13px 13px;
+    background-repeat: repeat;
 }
 
 .download-btn {
@@ -207,7 +203,7 @@ My styles, note: 1rem = 20px
     column-gap: 5px;
     align-items: center;
     font-size: 0.9rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1.6rem;
 }
 
 .size-x {
@@ -266,7 +262,7 @@ My styles, note: 1rem = 20px
 }
 
 .yellow-bg {
-    background-color: #9a5519;
+    background-color: var(--my-warning-badge);
 }
 
 .img-checkbox {
