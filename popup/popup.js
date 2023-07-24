@@ -151,13 +151,28 @@ function getFolderName(href) {
     return `${name}-images-${Date.now()}`;
 }
 
+function getRandom_0_to_998() {
+    return Math.floor(Math.random() * 999);
+}
+
 function getFileName(href) {
-    if (!href) {
-        return 'image';
-    }
     let pathname = new URL(href).pathname;
     const start = pathname.lastIndexOf('/') + 1;
-    return pathname.slice(start);
+    let fileName = pathname.slice(start);
+    return removeIllegalChars(fileName, 'x');
+}
+
+function removeIllegalChars(str, replacement) {
+    const legalChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._-";
+    let result = "";
+    for (let i = 0; i < str.length; i++) {
+        if (legalChars.includes(str[i])) {
+            result += str[i];
+        } else if (result.length === 0) {
+            result += replacement;
+        }
+    }
+    return result;
 }
 
 function setSettingsForm() {
