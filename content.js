@@ -57,6 +57,7 @@ function getImageSrcs(maxW) {
 
     //     imgSrcs.add(imgSrc);
     // }
+    // console.log(imgSrcs);
 
     emit({
         foundImgSrcs: {
@@ -70,19 +71,56 @@ function getSrcFromSrcset(srcset, maxW) {
     let currentSrc = '';
     const srcsAndDescriptors = srcset.split(',');
 
-    for (const srcAndDescriptor of srcsAndDescriptors) {
-        srcAndDescriptor.trim();
+    for (let srcAndDescriptor of srcsAndDescriptors) {
+        srcAndDescriptor = srcAndDescriptor.trim();
         if (!srcAndDescriptor.includes(' ')) { continue; }
         const srcAndDescriptorArray = srcAndDescriptor.split(' ');
         if (!srcAndDescriptorArray[1].endsWith('w')) { continue; }
         const width = Math.round(srcAndDescriptorArray[1].slice(0, -1));
-        if (width < maxW && width > currentWidth) {
+
+        if (width <= maxW && width > currentWidth) {
             currentWidth = width;
             currentSrc = srcAndDescriptorArray[0];
         }
     }
     return currentSrc;
 }
+
+// function getSrcFromSrcset(srcset, maxW) {
+//     let currentWidth = 0;
+//     let currentSrc = '';
+//     const srcsAndDescriptors = srcset.split(',');
+
+//     console.log('srcsAndDescriptors.length: ', srcsAndDescriptors.length);
+
+//     let i = 0;
+//     for (const srcAndDescriptor of srcsAndDescriptors) {
+
+//         console.log('srcAndDescriptor with i:', i + srcAndDescriptor);
+
+//         srcAndDescriptor.trim();
+//         if (!srcAndDescriptor.includes(' ')) { continue; }
+//         const srcAndDescriptorArray = srcAndDescriptor.split(' ');
+//         if (!srcAndDescriptorArray[1].endsWith('w')) { continue; }
+//         const width = Math.round(srcAndDescriptorArray[1].slice(0, -1));
+
+//         console.log('width: ', width);
+//         console.log('maxW: ', maxW);
+//         console.log('currentWidth', currentWidth);
+//         console.log('i: ', i);
+
+//         if (width < maxW && width > currentWidth) {
+//             currentWidth = width;
+//             currentSrc = srcAndDescriptorArray[0];
+
+//             console.log(currentWidth);
+//             console.log('currentSrc with i: ', i + currentSrc);
+
+//         }
+//         i++;
+//     }
+//     return currentSrc;
+// }
 
 function getBackgroundImageURL(element) {
     const bgImage = window.getComputedStyle(element).backgroundImage;

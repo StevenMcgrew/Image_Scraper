@@ -89,7 +89,7 @@ getImagesBtn.addEventListener('click', (e) => {
     document.querySelector('.spinner').hidden = false;
     emit({
         getImageSrcs: {
-            maxW: Math.round(settingsForm.maxW)
+            maxW: Math.round(settingsForm.maxW.value)
         }
     });
 });
