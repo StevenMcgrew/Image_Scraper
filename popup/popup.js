@@ -24,27 +24,14 @@ document.addEventListener("keyup", function (e) {
 });
 
 selectAll.addEventListener('change', (e) => {
-    let newChecked;
-    let newOutline;
-    let newBorderColor;
-
-    if (e.target.checked) {
-        newChecked = true;
-        newOutline = '2px solid var(--primary)';
-        newBorderColor = 'transparent';
-    } else {
-        newChecked = false;
-        newOutline = 'none';
-        newBorderColor = 'gray';
-    }
-
-    let items = imgFlexwrap.children;
-    for (const item of items) {
-        const checkbox = item.firstElementChild.firstElementChild;
-        checkbox.checked = newChecked;
-        item.dataset.checked = newChecked.toString();
-        item.style.outline = newOutline;
-        item.style.borderColor = newBorderColor;
+    const selectAll = e.target;
+    let flexItems = imgFlexwrap.children;
+    for (const flexItem of flexItems) {
+        const itemCheckbox = flexItem.firstElementChild.firstElementChild;
+        if (selectAll.checked === true && itemCheckbox.checked === false ||
+            selectAll.checked === false && itemCheckbox.checked === true) {
+            itemCheckbox.click();
+        }
     }
 });
 
@@ -95,6 +82,7 @@ getImagesBtn.addEventListener('click', (e) => {
 });
 
 downloadBtn.addEventListener('click', (e) => {
+    e.target.setAttribute('aria-busy', 'true');
     let folderNameWithSlash = '';
     if (settingsForm.isCreateFolder.checked) {
         folderNameWithSlash = getFolderName(href) + '/';
@@ -114,7 +102,14 @@ downloadBtn.addEventListener('click', (e) => {
             });
         }
     }
+    setTimeout(() => {
+        e.target.setAttribute('aria-busy', 'false');
+    }, 1000);
 });
+
+function doNothing() {
+
+}
 
 function showDownloadBtn(selectionCount) {
     if (selectionCount === 1) {
@@ -338,7 +333,6 @@ function toggleChecked(e) {
 function toggleFlexItemChecked(e) {
     e.stopPropagation();
 
-
     let currentElement = e.currentTarget;
     while (currentElement.dataset.name !== 'flexItem') {
         currentElement = currentElement.parentElement;
@@ -364,10 +358,12 @@ function toggleDatasetChecked(element) {
 function trackSelectionCount(e) {
     if (e.target.checked) {
         selectionCount++;
+        console.log('selectionCount: ', selectionCount);
         showDownloadBtn(selectionCount);
         return;
     }
     selectionCount--;
+    console.log('selectionCount: ', selectionCount);
     showDownloadBtn(selectionCount);
     if (selectionCount === 0) {
         downloadBtn.hidden = true;

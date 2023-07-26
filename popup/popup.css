@@ -25,12 +25,6 @@ label {
     align-items: center;
 }
 
-[aria-busy=true]:not(input, select, textarea)::before {
-    width: 4em;
-    height: 4em;
-    border-radius: 4em;
-}
-
 /****************************************************
 My styles, note: 1rem = 20px
 *****************************************************/
@@ -326,4 +320,10 @@ My styles, note: 1rem = 20px
     font-weight: var(--font-weight);
     font-size: 0.875rem;
     text-decoration: none;
+}
+
+[aria-busy=true].spinner:not(input, select, textarea)::before {
+    width: 4em;
+    height: 4em;
+    border-radius: 4em;
 }
