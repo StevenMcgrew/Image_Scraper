@@ -183,7 +183,7 @@ function setSettingsForm() {
 }
 
 function createImgElements(srcs) {
-    for (let src of srcs) {
+    for (const src of srcs) {
         const img = document.createElement('img');
         img.onerror = (e) => { handleImgLoadError(e, srcs.length); };
         img.onload = (e) => { pushAndContinue(e, srcs.length); };
@@ -199,8 +199,14 @@ function handleImgLoadError(e, srcsLength) {
 }
 
 function pushAndContinue(e, srcsLength) {
+    const img = e.currentTarget;
     imgCount++;
-    imgElements.push(e.currentTarget);
+    // if ((img.naturalWidth !== Math.round(settingsForm.maxW.value) ||
+    //     img.naturalHeight !== Math.round(settingsForm.maxH.value)) &&
+    //     img.src.includes('width=')) {
+    //         // TODO: replace width= and height= with maxW and maxH values
+    // }
+    imgElements.push(img);
     if (imgCount === srcsLength) {
         continueAndFinish();
     }
@@ -358,12 +364,10 @@ function toggleDatasetChecked(element) {
 function trackSelectionCount(e) {
     if (e.target.checked) {
         selectionCount++;
-        console.log('selectionCount: ', selectionCount);
         showDownloadBtn(selectionCount);
         return;
     }
     selectionCount--;
-    console.log('selectionCount: ', selectionCount);
     showDownloadBtn(selectionCount);
     if (selectionCount === 0) {
         downloadBtn.hidden = true;
@@ -465,29 +469,6 @@ async function emit(message) {
     const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
     const response = await chrome.tabs.sendMessage(tab.id, message);
 }
-
-// async function getCurrentTab() {
-//     let queryOptions = { active: true };
-//     let [tab] = await chrome.tabs.query(queryOptions);
-//     return tab;
-// };
-
-// function injectContentScript(tab) {
-//     const { id, url } = tab;
-//     chrome.scripting.executeScript(
-//         {
-//             target: { tabId: id },
-//             files: ['content.js']
-//         }
-//     );
-// };
-
-// if (!window['alreadyInjected']) {
-//     getCurrentTab().then((tab) => {
-//         injectContentScript(tab);
-//         window['alreadyInjected'] = true;
-//     });
-// }
 
 /**************************************************************************
 On load
