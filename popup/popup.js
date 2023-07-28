@@ -12,6 +12,7 @@ const selectAll = document.querySelector('.select-all');
 let imgElements = [];
 let selectionCount = 0;
 let imgCount = 0;
+let totalImgCount = 0;
 let href = '';
 let isAltKeyDown = false;
 
@@ -182,32 +183,51 @@ function setSettingsForm() {
         });
 }
 
+function createSrcWithNewSize(src, newW, newH) {
+    const widthRegex = /width=\d+&/;
+    const heightRegex = /height=\d+&/;
+    src = src.replace(widthRegex, `width=${newW}&`);
+    src = src.replace(heightRegex, `height=${newH}&`);
+    return src;
+}
+
 function createImgElements(srcs) {
+    totalImgCount += srcs.length;
     for (const src of srcs) {
         const img = document.createElement('img');
-        img.onerror = (e) => { handleImgLoadError(e, srcs.length); };
-        img.onload = (e) => { pushAndContinue(e, srcs.length); };
+        img.onerror = (e) => { handleImgLoadError(e, totalImgCount); };
+        img.onload = (e) => { pushAndContinue(e, totalImgCount); };
         img.src = src;
     }
 }
 
-function handleImgLoadError(e, srcsLength) {
+function createNewImgElement(src) {
+    totalImgCount++;
+    const img = document.createElement('img');
+    img.dataset.newlyCreated = true;
+    img.onerror = (e) => { handleImgLoadError(e, totalImgCount); };
+    img.onload = (e) => { pushAndContinue(e, totalImgCount); };
+    img.src = src;
+}
+
+function handleImgLoadError(e, totalImgCount) {
     imgCount++;
-    if (imgCount === srcsLength) {
+    if (imgCount === totalImgCount) {
         continueAndFinish();
     }
 }
 
-function pushAndContinue(e, srcsLength) {
+function pushAndContinue(e, totalImgCount) {
     const img = e.currentTarget;
     imgCount++;
-    // if ((img.naturalWidth !== Math.round(settingsForm.maxW.value) ||
-    //     img.naturalHeight !== Math.round(settingsForm.maxH.value)) &&
-    //     img.src.includes('width=')) {
-    //         // TODO: replace width= and height= with maxW and maxH values
-    // }
+    if (img.src.includes('width=') && !img.dataset.newlyCreated) {
+        const W = Math.round(settingsForm.maxW.value);
+        const H = Math.round(settingsForm.maxH.value);
+        const newSrc = createSrcWithNewSize(img.src, W, H);
+        createNewImgElement(newSrc);
+    }
     imgElements.push(img);
-    if (imgCount === srcsLength) {
+    if (imgCount === totalImgCount) {
         continueAndFinish();
     }
 }
