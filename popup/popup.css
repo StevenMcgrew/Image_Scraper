@@ -282,14 +282,6 @@ My styles, note: 1rem = 20px
     margin-left: -0.26rem;
 }
 
-.spinner {
-    position: absolute;
-    top: 40%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80%;
-}
-
 .info-svg-icon {
     position: relative;
     top: -0.2rem;
@@ -322,8 +314,31 @@ My styles, note: 1rem = 20px
     text-decoration: none;
 }
 
-[aria-busy=true].spinner:not(input, select, textarea)::before {
-    width: 4em;
-    height: 4em;
-    border-radius: 4em;
+.loading-panel {
+    height: 28rem;
+    display: grid;
+    grid-template-columns: auto 28.1rem;
+    grid-template-rows: repeat(4, min-content);
+    row-gap: 15px;
+    column-gap: 5px;
+    align-items: center;
+    font-size: 0.9rem;
+    padding: 2rem 2rem;
+}
+
+.span-cell {
+    height: 27px;
+    display: grid;
+    gap: clamp(1px, 2px, 3px);
+    grid-template-columns: repeat(auto-fit, minmax(4px, 8px));
+    overflow: hidden;
+}
+
+.counter-div {
+    display: inline-block;
+    width: 8px;
+    max-height: 27px;
+    min-height: 7px;
+    border-radius: 2px;
+    background-color: limegreen;
 }

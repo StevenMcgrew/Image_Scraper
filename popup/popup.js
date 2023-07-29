@@ -74,7 +74,7 @@ settingsForm.addEventListener('submit', (e) => {
 
 getImagesBtn.addEventListener('click', (e) => {
     getImagesPanel.hidden = true;
-    document.querySelector('.spinner').hidden = false;
+    document.querySelector('.loading-panel').hidden = false;
     emit({
         getImageSrcs: {
             maxW: Math.round(settingsForm.maxW.value)
@@ -343,7 +343,7 @@ function continueAndFinish() {
     }
 
     // Show download-btn and select-all checkbox
-    document.querySelector('.spinner').hidden = true;
+    document.querySelector('.loading-panel').hidden = true;
     const imgCount = imgFlexwrap.childElementCount;
     document.querySelector('.select-all-span').textContent = `Select All (${imgCount})`;
     downloadBtn.textContent = `Download 0 images`;
