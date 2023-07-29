@@ -191,12 +191,24 @@ function createSrcWithNewSize(src, newW, newH) {
     return src;
 }
 
+// function getRandomFourDigitNumber() {
+//     return Math.floor(Math.random() * 9000) + 1000;
+// }
+
+function appendLoader(container, className) {
+    const div = document.createElement('div');
+    div.classList.add('loader-div');
+    div.classList.add(className);
+    container.appendChild(div);
+}
+
 function createImgElements(srcs) {
     totalImgCount += srcs.length;
     for (const src of srcs) {
         const img = document.createElement('img');
-        img.onerror = (e) => { handleImgLoadError(e, totalImgCount); };
-        img.onload = (e) => { pushAndContinue(e, totalImgCount); };
+        img.onerror = (e) => { onImageError(e, totalImgCount); };
+        img.onload = (e) => { onImageLoad(e, totalImgCount); };
+        appendLoader(document.querySelector('.loaded-cell'), 'blue-border');
         img.src = src;
     }
 }
@@ -205,119 +217,167 @@ function createNewImgElement(src) {
     totalImgCount++;
     const img = document.createElement('img');
     img.dataset.newlyCreated = true;
-    img.onerror = (e) => { handleImgLoadError(e, totalImgCount); };
-    img.onload = (e) => { pushAndContinue(e, totalImgCount); };
+    img.onerror = (e) => { onImageError(e, totalImgCount); };
+    img.onload = (e) => { onImageLoad(e, totalImgCount); };
+    appendLoader(document.querySelector('.loaded-cell'), 'blue-border');
     img.src = src;
 }
 
-function handleImgLoadError(e, totalImgCount) {
+function onImageError(e, totalImgCount) {
     imgCount++;
+    let img = e.currentTarget;
+    const loaderContainer = document.querySelector('.loaded-cell');
+    loaderContainer.lastElementChild.remove();
     if (imgCount === totalImgCount) {
-        continueAndFinish();
+        setTimeout(() => {
+            continueAndFinish();
+        }, 500);
     }
+    img = null;
 }
 
-function pushAndContinue(e, totalImgCount) {
-    const img = e.currentTarget;
+function onImageLoad(e, totalImgCount) {
     imgCount++;
+    let img = e.currentTarget;
+    img.onerror = null;
+    img.onload = null;
+
+    const loaderContainer = document.querySelector('.loaded-cell');
+    fillLoader(loaderContainer, 'blue-background');
+
     if (img.src.includes('width=') && !img.dataset.newlyCreated) {
         const W = Math.round(settingsForm.maxW.value);
         const H = Math.round(settingsForm.maxH.value);
         const newSrc = createSrcWithNewSize(img.src, W, H);
         createNewImgElement(newSrc);
     }
-    imgElements.push(img);
-    if (imgCount === totalImgCount) {
-        continueAndFinish();
+
+    img = convertResizeSquare(img);
+    if (img) {
+        imgElements.push(img);
     }
+    if (imgCount === totalImgCount) {
+        setTimeout(() => {
+            continueAndFinish();
+        }, 500);
+    }
+}
+
+function fillLoader(container, className) {
+    const loaders = container.children;
+    for (const loader of loaders) {
+        if (!loader.classList.contains(className)) {
+            loader.classList.add(className);
+            break;
+        }
+    }
+}
+
+function fillModifierLoaders(note) {
+    if (note.includes('Converted')) {
+        fillLoader(document.querySelector('.converted-cell'), 'yellow-background');
+    }
+    if (note.includes('Resized')) {
+        fillLoader(document.querySelector('.resized-cell'), 'yellow-background');
+    }
+    if (note.includes('Squared')) {
+        fillLoader(document.querySelector('.squared-cell'), 'yellow-background');
+    }
+}
+
+function convertResizeSquare(img) {
+    let W = img.naturalWidth;
+    let H = img.naturalHeight;
+
+    if (W < 5 || H < 5) {
+        return null;
+    }
+
+    const maxW = Math.round(settingsForm.maxW.value);
+    const maxH = Math.round(settingsForm.maxH.value);
+    let fileName = getFileName(img.src);
+    let fileExt = getFileExt(fileName);
+    let note = '';
+
+    if (W > maxW || H > maxH) {
+        if (!settingsForm.isScaleDown.checked) {
+            return null;
+        }
+        appendLoader(document.querySelector('.resized-cell'), 'yellow-border');
+        const newSize = determineSize(W, H, maxW, maxH);
+        W = newSize.width;
+        H = newSize.height;
+        if (fileExt !== 'jpg' && fileExt !== 'jpeg') {
+            appendLoader(document.querySelector('.converted-cell'), 'yellow-border');
+            fileName = changeFileExtToJpg(fileName);
+            fileExt = 'jpg';
+            note += 'Converted & ';
+        }
+        if (settingsForm.isMakeSquare.checked && W !== H) {
+            appendLoader(document.querySelector('.squared-cell'), 'yellow-border');
+            drawToSquareCanvas(canvas, img, W, H);
+            W = (W > H) ? W : H;
+            H = W;
+            note += 'Resized & Squared';
+        } else {
+            drawToCanvas(canvas, img, W, H);
+            note += 'Resized';
+        }
+        try {
+            img.src = canvas.toDataURL('image/jpeg', 1.0);
+        } catch (error) {
+            return null;
+        }
+    } else {
+        if (settingsForm.isMakeSquare.checked && W !== H) {
+            appendLoader(document.querySelector('.squared-cell'), 'yellow-border');
+            drawToSquareCanvas(canvas, img, W, H);
+            W = (W > H) ? W : H;
+            H = W;
+            try {
+                img.src = canvas.toDataURL('image/jpeg', 1.0);
+            } catch (error) {
+                return null;
+            }
+            if (fileExt !== 'jpg' && fileExt !== 'jpeg') {
+                appendLoader(document.querySelector('.converted-cell'), 'yellow-border');
+                fileName = changeFileExtToJpg(fileName);
+                fileExt = 'jpg';
+                note += 'Converted & ';
+            }
+            note += 'Squared';
+        } else {
+            if (fileExt !== 'jpg' && fileExt !== 'jpeg' && settingsForm.isConvertToJPG.checked) {
+                appendLoader(document.querySelector('.converted-cell'), 'yellow-border');
+                drawToCanvas(canvas, img, W, H);
+                try {
+                    img.src = canvas.toDataURL('image/jpeg', 1.0);
+                } catch (error) {
+                    return null;
+                }
+                fileName = changeFileExtToJpg(fileName);
+                fileExt = 'jpg';
+                note += 'Converted';
+            }
+        }
+    }
+
+    fillModifierLoaders(note);
+
+    img.dataset.fileName = fileName;
+    img.dataset.fileExt = fileExt;
+    img.dataset.note = note;
+    img.dataset.width = W;
+    img.dataset.height = H;
+    return img;
 }
 
 function continueAndFinish() {
     imgElements.sort(compareWidths);
 
     for (const img of imgElements) {
-        img.onerror = null;
-        img.onload = null;
-
-        let W = img.naturalWidth;
-        let H = img.naturalHeight;
-
-        if (W < 5 || H < 5) {
-            continue;
-        }
-
-        const maxW = Math.round(settingsForm.maxW.value);
-        const maxH = Math.round(settingsForm.maxH.value);
-        let fileName = getFileName(img.src);
-        let fileExt = getFileExt(fileName);
-        let additionalNote = '';
-
-        // Resizing and converting
-        if (W > maxW || H > maxH) {
-            if (!settingsForm.isScaleDown.checked) {
-                continue;
-            }
-            const newSize = determineSize(W, H, maxW, maxH);
-            W = newSize.width;
-            H = newSize.height;
-            if (fileExt !== 'jpg' && fileExt !== 'jpeg') {
-                fileName = changeFileExtToJpg(fileName);
-                fileExt = 'jpg';
-                additionalNote += 'Converted & ';
-            }
-            if (settingsForm.isMakeSquare.checked && W !== H) {
-                drawToSquareCanvas(canvas, img, W, H);
-                W = (W > H) ? W : H;
-                H = W;
-                additionalNote += 'Resized & Squared';
-            } else {
-                drawToCanvas(canvas, img, W, H);
-                additionalNote += 'Resized';
-            }
-            try {
-                img.src = canvas.toDataURL('image/jpeg', 1.0);
-            } catch (error) {
-                console.log('canvas.toDataURL error on this src:  ', img.src);
-                console.log(error);
-                continue;
-            }
-        } else {
-            if (settingsForm.isMakeSquare.checked && W !== H) {
-                drawToSquareCanvas(canvas, img, W, H);
-                W = (W > H) ? W : H;
-                H = W;
-                try {
-                    img.src = canvas.toDataURL('image/jpeg', 1.0);
-                } catch (error) {
-                    console.log('canvas.toDataURL error on this src:  ', img.src);
-                    console.log(error);
-                    continue;
-                }
-                if (fileExt !== 'jpg' && fileExt !== 'jpeg') {
-                    fileName = changeFileExtToJpg(fileName);
-                    fileExt = 'jpg';
-                    additionalNote += 'Converted & ';
-                }
-                additionalNote += 'Squared';
-            } else {
-                if (fileExt !== 'jpg' && fileExt !== 'jpeg' && settingsForm.isConvertToJPG.checked) {
-                    drawToCanvas(canvas, img, W, H);
-                    try {
-                        img.src = canvas.toDataURL('image/jpeg', 1.0);
-                    } catch (error) {
-                        console.log('canvas.toDataURL error on this src:  ', img.src);
-                        console.log(error);
-                        continue;
-                    }
-                    fileName = changeFileExtToJpg(fileName);
-                    fileExt = 'jpg';
-                    additionalNote += 'Converted';
-                }
-            }
-        }
-
-        // Append to img-flexwrap
         const flexItem = flexItemTemplate.content.firstElementChild.cloneNode(true);
+
         const checkboxLabel = flexItem.querySelector('.select-img');
         const checkbox = flexItem.querySelector('.img-checkbox');
         const imgSize = flexItem.querySelector('.img-size');
@@ -325,25 +385,25 @@ function continueAndFinish() {
         const imgExtraDetails = flexItem.querySelector('.img-extra-details');
         const imgContainer = flexItem.querySelector('.img-container');
         const imgName = flexItem.querySelector('.img-name');
+
         flexItem.addEventListener('click', toggleChecked);
         checkboxLabel.addEventListener('click', (e) => e.stopPropagation());
         checkbox.addEventListener('click', toggleFlexItemChecked);
         checkbox.addEventListener('change', trackSelectionCount);
-        imgSize.textContent = `${W} x ${H}`;
-        imgType.textContent = fileExt;
-        if (additionalNote) {
+
+        imgSize.textContent = `${img.dataset.width} x ${img.dataset.height}`;
+        imgType.textContent = img.dataset.fileExt;
+        if (img.dataset.note) {
             imgExtraDetails.classList.add('yellow-bg');
-            imgExtraDetails.textContent = additionalNote;
+            imgExtraDetails.textContent = img.dataset.note;
         }
-        imgName.textContent = fileName;
-        imgName.setAttribute('title', fileName);
+        imgName.textContent = img.dataset.fileName;
+        imgName.setAttribute('title', img.dataset.fileName);
         img.classList.add('img-preview');
         imgContainer.appendChild(img);
         imgFlexwrap.appendChild(flexItem);
     }
 
-    // Show download-btn and select-all checkbox
-    document.querySelector('.loading-panel').hidden = true;
     const imgCount = imgFlexwrap.childElementCount;
     document.querySelector('.select-all-span').textContent = `Select All (${imgCount})`;
     downloadBtn.textContent = `Download 0 images`;
@@ -395,7 +455,7 @@ function trackSelectionCount(e) {
 }
 
 function compareWidths(imgA, imgB) {
-    return imgB.naturalWidth - imgA.naturalWidth;
+    return imgB.dataset.height - imgA.dataset.width;
 }
 
 function getFileExt(fileName) {

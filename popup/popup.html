@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image-Ape</title>
+    <title>ScrapeApe</title>
     <link rel="stylesheet" href="pico.css">
     <link rel="stylesheet" href="popup.css">
 </head>
@@ -31,7 +31,7 @@
                 </svg>
             </div>
 
-            <h4>ImageApe</h4>
+            <h4>SrapeApe</h4>
         </div>
 
         <button class="outline settings-btn">
@@ -53,14 +53,14 @@
         </div>
 
         <div class="loading-panel" hidden>
-            <span>Loading images: </span>
-            <div class="span-cell loaded-cell"></div>
-            <span>Converted: </span>
-            <div class="span-cell converted-cell"></div>
-            <span>Resized: </span>
-            <div class="span-cell resized-cell"></div>
-            <span>Squared: </span>
-            <div class="span-cell squared-cell"></div>
+            <span class="loader-label">Loaded images: </span>
+            <div class="loader-container loaded-cell"></div>
+            <span class="loader-label">Converted: </span>
+            <div class="loader-container converted-cell"></div>
+            <span class="loader-label">Resized: </span>
+            <div class="loader-container resized-cell"></div>
+            <span class="loader-label">Squared: </span>
+            <div class="loader-container squared-cell"></div>
         </div>
 
     </main>
@@ -113,7 +113,7 @@
                             </g>
                         </svg>
                     </button>
-                    <div id="scale-down-popover" popover>If the image is larger than the max setting, resize it to fit within the max (this process requires conversion to JPG).</div>
+                    <div id="scale-down-popover" popover>If the image is larger than the max setting, resize it to fit within the max (this process requires converting non-JPG to JPG).</div>
                 </div>
                 <div></div>
                 <div></div>
@@ -130,7 +130,7 @@
                             </g>
                         </svg>
                     </button>
-                    <div id="make-square-popover" popover>If you want the images to be square, this setting will add white space to accomplish that (this process requires conversion to JPG).</div>
+                    <div id="make-square-popover" popover>If you want the images to be square, this setting will add white space to accomplish that (this process requires converting non-JPG to JPG).</div>
                 </div>
                 <div></div>
                 <div></div>
