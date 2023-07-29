@@ -13,6 +13,9 @@ function getImageSrcs(maxW) {
                 imgSrc = el.src;
             }
         }
+        else if (el.tagName === 'A') {
+            imgSrc = getHrefFromAnchor(el);
+        }
         else {
             imgSrc = getBackgroundImageURL(el);
         }
@@ -39,6 +42,16 @@ function getImageSrcs(maxW) {
             imgSrcs: [...imgSrcs]
         }
     });
+}
+
+function getHrefFromAnchor(anchor) {
+    const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.tiff', '.tif', '.gif', '.svg', '.bmp', '.ico', '.avif'];
+    for (const ext of allowedExtensions) {
+        if (anchor.href.includes(ext)) {
+            return anchor.href;
+        }
+    }
+    return '';
 }
 
 function getSrcFromSrcset(srcset, maxW) {
