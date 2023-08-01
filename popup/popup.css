@@ -156,14 +156,11 @@ My styles, note: 1rem = 20px
 }
 
 .img-preview {
-    /* width: var(--img-flexwrap-item-width);
-    height: var(--img-flexwrap-item-width);
-    object-fit: scale-down;
-    object-position: center; */
     background-image: var(--my-transparency-indicator);
     background-size: 26px 26px;
     background-position: 0 0, 13px 13px;
     background-repeat: repeat;
+    max-height: 100%;
 }
 
 .download-btn {

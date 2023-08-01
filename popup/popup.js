@@ -460,7 +460,18 @@ function compareWidths(imgA, imgB) {
 
 function getFileExt(fileName) {
     const start = fileName.lastIndexOf('.') + 1;
+
     return fileName.slice(start);
+}
+
+function getFileExt(fileName) {
+    const allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'tiff', 'tif', 'gif', 'svg', 'bmp', 'ico', 'avif'];
+    const start = fileName.lastIndexOf('.') + 1;
+    const fileExt = fileName.slice(start);
+    if (allowedExtensions.includes(fileExt)) {
+        return fileExt;
+    }
+    return 'Unknown';
 }
 
 function changeFileExtToJpg(fileName) {
