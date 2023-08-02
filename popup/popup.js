@@ -108,10 +108,6 @@ downloadBtn.addEventListener('click', (e) => {
     }, 1000);
 });
 
-function doNothing() {
-
-}
-
 function showDownloadBtn(selectionCount) {
     if (selectionCount === 1) {
         downloadBtn.textContent = `Download 1 image`;
@@ -147,12 +143,18 @@ function getFolderName(href) {
     return `${name}-images-${Date.now()}`;
 }
 
-function getRandom_0_to_998() {
-    return Math.floor(Math.random() * 999);
+function getRandom4DigitNum() {
+    return Math.floor(Math.random() * 9000) + 1000;
 }
 
-function getFileName(href) {
-    let pathname = new URL(href).pathname;
+function getFileName(src) {
+    if (src.startsWith('data:image')) {
+        const start = src.indexOf('/') + 1;
+        const end = src.indexOf(';');
+        const fileType = src.slice(start, end);
+        return `image-${getRandom4DigitNum()}.${fileType}`;
+    }
+    let pathname = new URL(src).pathname;
     const start = pathname.lastIndexOf('/') + 1;
     let fileName = pathname.slice(start);
     return removeIllegalChars(fileName, 'x');
@@ -233,6 +235,7 @@ function onImageError(e, totalImgCount) {
             continueAndFinish();
         }, 500);
     }
+    console.log(e.error);
     img = null;
 }
 

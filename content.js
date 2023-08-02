@@ -30,7 +30,7 @@ function getImageSrcs(maxW) {
             imgSrc = window.location.origin + imgSrc;
         } else if (imgSrc.startsWith('http:')) {
             imgSrc = changeSrcToHttps(imgSrc);
-        } else { // default case (should be a relative path without a '/' since the other things were eliminated)
+        } else { // default case (should be a relative path without a '/' since the other possibilities were eliminated)
             imgSrc = window.location.origin + window.location.pathname + imgSrc;
         }
 
