@@ -555,6 +555,29 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
 });
 
+/**************************************************************************
+webRequest.onCompleted
+***************************************************************************/
+chrome.webRequest.onCompleted.addListener(function (details) {
+    if (details.initiator === location.origin) {
+        console.log('URL: ', details.url);
+        console.log('CONTENT-TYPE: ', getHeaderFromHeaders(details.responseHeaders, 'content-type'));
+    }
+    else {
+        console.log('failed here');
+    }
+}, {
+    urls: ['<all_urls>']
+}, ['responseHeaders']);
+
+function getHeaderFromHeaders(headers, headerName) {
+    for (var i = 0; i < headers.length; ++i) {
+        var header = headers[i];
+        if (header.name.toLowerCase() === headerName) {
+            return header.value;
+        }
+    }
+}
 
 /**************************************************************************
 Emit outgoing messages
