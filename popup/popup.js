@@ -10,6 +10,7 @@ const flexItemTemplate = document.querySelector('.flex-item-template');
 const getImagesPanel = document.querySelector('.get-images-panel');
 const selectAll = document.querySelector('.select-all');
 let imgElements = [];
+let webRequestDetails = {};
 let selectionCount = 0;
 let imgCount = 0;
 let totalImgCount = 0;
@@ -147,17 +148,35 @@ function getRandom4DigitNum() {
     return Math.floor(Math.random() * 9000) + 1000;
 }
 
-function getFileName(src) {
+function getFileNameAndExt(src) {
     if (src.startsWith('data:image')) {
         const start = src.indexOf('/') + 1;
         const end = src.indexOf(';');
-        const fileType = src.slice(start, end);
-        return `image-${getRandom4DigitNum()}.${fileType}`;
+        let fileExt = src.slice(start, end);
+        if (fileExt === 'svg+xml') {
+            fileExt = 'svg';
+        }
+        if (fileExt === 'vnd.microsoft.icon') {
+            fileExt = 'ico';
+        }
+        const fileName = `image-${getRandom4DigitNum()}`;
+        return { fileName, fileExt };
     }
     let pathname = new URL(src).pathname;
     const start = pathname.lastIndexOf('/') + 1;
     let fileName = pathname.slice(start);
-    return removeIllegalChars(fileName, 'x');
+    fileName = removeIllegalChars(fileName, 'x');
+    let lastDot = fileName.lastIndexOf('.');
+    if (lastDot === -1) {
+        lastDot = undefined;
+    }
+    const allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'tiff', 'tif', 'gif', 'svg', 'bmp', 'ico', 'avif'];
+    let fileExt = fileName.slice(lastDot + 1);
+    if (!allowedExtensions.includes(fileExt)) {
+        fileExt = 'unknown';
+    }
+    fileName = `${fileName.slice(0, lastDot)}-${getRandom4DigitNum()}`;
+    return { fileName, fileExt };
 }
 
 function removeIllegalChars(str, replacement) {
@@ -193,10 +212,6 @@ function createSrcWithNewSize(src, newW, newH) {
     return src;
 }
 
-// function getRandomFourDigitNumber() {
-//     return Math.floor(Math.random() * 9000) + 1000;
-// }
-
 function appendLoader(container, className) {
     const div = document.createElement('div');
     div.classList.add('loader-div');
@@ -210,6 +225,7 @@ function createImgElements(srcs) {
         const img = document.createElement('img');
         img.onerror = (e) => { onImageError(e, totalImgCount); };
         img.onload = (e) => { onImageLoad(e, totalImgCount); };
+        img.setAttribute('crossorigin', 'anonymous');
         appendLoader(document.querySelector('.loaded-cell'), 'blue-border');
         img.src = src;
     }
@@ -221,6 +237,7 @@ function createNewImgElement(src) {
     img.dataset.newlyCreated = true;
     img.onerror = (e) => { onImageError(e, totalImgCount); };
     img.onload = (e) => { onImageLoad(e, totalImgCount); };
+    img.setAttribute('crossorigin', 'anonymous');
     appendLoader(document.querySelector('.loaded-cell'), 'blue-border');
     img.src = src;
 }
@@ -232,7 +249,7 @@ function onImageError(e, totalImgCount) {
     loaderContainer.lastElementChild.remove();
     if (imgCount === totalImgCount) {
         setTimeout(() => {
-            continueAndFinish();
+            appendImgFlexItems();
         }, 500);
     }
     console.log(e.error);
@@ -261,7 +278,7 @@ function onImageLoad(e, totalImgCount) {
     }
     if (imgCount === totalImgCount) {
         setTimeout(() => {
-            continueAndFinish();
+            appendImgFlexItems();
         }, 500);
     }
 }
@@ -298,8 +315,16 @@ function convertResizeSquare(img) {
 
     const maxW = Math.round(settingsForm.maxW.value);
     const maxH = Math.round(settingsForm.maxH.value);
-    let fileName = getFileName(img.src);
-    let fileExt = getFileExt(fileName);
+    const imgDetails = webRequestDetails[img.src];
+    const alternateImgDetails = getFileNameAndExt(img.src);
+    let fileName = imgDetails?.fileName;
+    if (!fileName) {
+        fileName = alternateImgDetails.fileName;
+    }
+    let fileExt = imgDetails?.fileExt;
+    if (!fileExt) {
+        fileExt = alternateImgDetails.fileExt;
+    }
     let note = '';
 
     if (W > maxW || H > maxH) {
@@ -312,7 +337,6 @@ function convertResizeSquare(img) {
         H = newSize.height;
         if (fileExt !== 'jpg' && fileExt !== 'jpeg') {
             appendLoader(document.querySelector('.converted-cell'), 'yellow-border');
-            fileName = changeFileExtToJpg(fileName);
             fileExt = 'jpg';
             note += 'Converted & ';
         }
@@ -344,7 +368,6 @@ function convertResizeSquare(img) {
             }
             if (fileExt !== 'jpg' && fileExt !== 'jpeg') {
                 appendLoader(document.querySelector('.converted-cell'), 'yellow-border');
-                fileName = changeFileExtToJpg(fileName);
                 fileExt = 'jpg';
                 note += 'Converted & ';
             }
@@ -358,7 +381,6 @@ function convertResizeSquare(img) {
                 } catch (error) {
                     return null;
                 }
-                fileName = changeFileExtToJpg(fileName);
                 fileExt = 'jpg';
                 note += 'Converted';
             }
@@ -367,7 +389,7 @@ function convertResizeSquare(img) {
 
     fillModifierLoaders(note);
 
-    img.dataset.fileName = fileName;
+    img.dataset.fileName = `${fileName}.${fileExt}`;
     img.dataset.fileExt = fileExt;
     img.dataset.note = note;
     img.dataset.width = W;
@@ -375,7 +397,7 @@ function convertResizeSquare(img) {
     return img;
 }
 
-function continueAndFinish() {
+function appendImgFlexItems() {
     imgElements.sort(compareWidths);
 
     for (const img of imgElements) {
@@ -461,28 +483,6 @@ function compareWidths(imgA, imgB) {
     return imgB.dataset.height - imgA.dataset.width;
 }
 
-function getFileExt(fileName) {
-    const start = fileName.lastIndexOf('.') + 1;
-
-    return fileName.slice(start);
-}
-
-function getFileExt(fileName) {
-    const allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'tiff', 'tif', 'gif', 'svg', 'bmp', 'ico', 'avif'];
-    const start = fileName.lastIndexOf('.') + 1;
-    const fileExt = fileName.slice(start);
-    if (allowedExtensions.includes(fileExt)) {
-        return fileExt;
-    }
-    return 'Unknown';
-}
-
-function changeFileExtToJpg(fileName) {
-    const end = fileName.lastIndexOf('.');
-    let newFileName = fileName.slice(0, end);
-    return newFileName += '.jpg';
-}
-
 
 /**************************************************************************
 Image Ops
@@ -542,6 +542,40 @@ function determineSize(w, h, maxW, maxH) {
 
 
 /**************************************************************************
+webRequest.onCompleted
+***************************************************************************/
+chrome.webRequest.onCompleted.addListener(function (details) {
+    webRequestDetails[details.url] = {
+        fileName: getFileNameAndExt(details.url).fileName,
+        fileExt: getFileExt(getContentType(details.responseHeaders))
+    };
+}, {
+    urls: ['<all_urls>'],
+    types: ['image']
+}, ['responseHeaders']);
+
+function getContentType(headers) {
+    for (const header of headers) {
+        if (header.name.toLowerCase() === 'content-type') {
+            return header.value;
+        }
+    }
+}
+
+function getFileExt(MIMEtype) {
+    const start = MIMEtype.indexOf('/') + 1;
+    let imgType = MIMEtype.slice(start);
+    if (imgType === 'svg+xml') {
+        imgType = 'svg';
+    }
+    if (imgType === 'vnd.microsoft.icon') {
+        imgType = 'ico';
+    }
+    return imgType;
+}
+
+
+/**************************************************************************
 Handle incoming messages
 ***************************************************************************/
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -555,29 +589,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
 });
 
-/**************************************************************************
-webRequest.onCompleted
-***************************************************************************/
-chrome.webRequest.onCompleted.addListener(function (details) {
-    if (details.initiator === location.origin) {
-        console.log('URL: ', details.url);
-        console.log('CONTENT-TYPE: ', getHeaderFromHeaders(details.responseHeaders, 'content-type'));
-    }
-    else {
-        console.log('failed here');
-    }
-}, {
-    urls: ['<all_urls>']
-}, ['responseHeaders']);
-
-function getHeaderFromHeaders(headers, headerName) {
-    for (var i = 0; i < headers.length; ++i) {
-        var header = headers[i];
-        if (header.name.toLowerCase() === headerName) {
-            return header.value;
-        }
-    }
-}
 
 /**************************************************************************
 Emit outgoing messages
