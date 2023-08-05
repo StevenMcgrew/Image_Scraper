@@ -11,6 +11,7 @@ const getImagesPanel = document.querySelector('.get-images-panel');
 const selectAll = document.querySelector('.select-all');
 let imgElements = [];
 let webRequestDetails = {};
+let redirectDetails = {};
 let selectionCount = 0;
 let imgCount = 0;
 let totalImgCount = 0;
@@ -153,11 +154,10 @@ function getFileNameAndExt(src) {
         const start = src.indexOf('/') + 1;
         const end = src.indexOf(';');
         let fileExt = src.slice(start, end);
-        if (fileExt === 'svg+xml') {
-            fileExt = 'svg';
-        }
-        if (fileExt === 'vnd.microsoft.icon') {
-            fileExt = 'ico';
+        switch (fileExt) {
+            case 'jpeg': fileExt = 'jpg'; break;
+            case 'svg+xml': fileExt = 'svg'; break;
+            case 'vnd.microsoft.icon': fileExt = 'ico'; break;
         }
         const fileName = `image-${getRandom4DigitNum()}`;
         return { fileName, fileExt };
@@ -175,7 +175,9 @@ function getFileNameAndExt(src) {
     if (!allowedExtensions.includes(fileExt)) {
         fileExt = 'unknown';
     }
-    fileName = `${fileName.slice(0, lastDot)}-${getRandom4DigitNum()}`;
+    fileName = fileName.slice(0, lastDot);
+    fileName = fileName.slice(0, 30); // limit length of fileName
+    fileName = `${fileName}-${getRandom4DigitNum()}`;
     return { fileName, fileExt };
 }
 
@@ -252,7 +254,7 @@ function onImageError(e, totalImgCount) {
             appendImgFlexItems();
         }, 500);
     }
-    console.log(e.error);
+    console.log('IMAGE LOAD ERROR: ', img.src);
     img = null;
 }
 
@@ -542,11 +544,16 @@ function determineSize(w, h, maxW, maxH) {
 
 
 /**************************************************************************
-webRequest.onCompleted
+webRequest events
 ***************************************************************************/
 chrome.webRequest.onCompleted.addListener(function (details) {
-    webRequestDetails[details.url] = {
-        fileName: getFileNameAndExt(details.url).fileName,
+    let url = details.url;
+    const originalUrl = redirectDetails[details.requestId];
+    if (originalUrl) {
+        url = originalUrl;
+    }
+    webRequestDetails[url] = {
+        fileName: getFileNameAndExt(url).fileName,
         fileExt: getFileExt(getContentType(details.responseHeaders))
     };
 }, {
@@ -565,14 +572,19 @@ function getContentType(headers) {
 function getFileExt(MIMEtype) {
     const start = MIMEtype.indexOf('/') + 1;
     let imgType = MIMEtype.slice(start);
-    if (imgType === 'svg+xml') {
-        imgType = 'svg';
-    }
-    if (imgType === 'vnd.microsoft.icon') {
-        imgType = 'ico';
+    switch (imgType) {
+        case 'jpeg': imgType = 'jpg'; break;
+        case 'svg+xml': imgType = 'svg'; break;
+        case 'vnd.microsoft.icon': imgType = 'ico'; break;
     }
     return imgType;
 }
+
+chrome.webRequest.onBeforeRedirect.addListener(function (details) {
+    redirectDetails[details.requestId] = details.url; // store the orignal url
+}, {
+    urls: ['<all_urls>'],
+}, ['responseHeaders']);
 
 
 /**************************************************************************
