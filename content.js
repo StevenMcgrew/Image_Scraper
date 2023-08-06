@@ -20,21 +20,20 @@ function getImageSrcs(maxW) {
             imgSrc = getBackgroundImageURL(el);
         }
 
-        if (!imgSrc ||
-            imgSrc.startsWith('https:') ||
-            imgSrc.startsWith('data:image')) {
-            // do nothing (we need to eliminate this for the rest of the checks)
-        } else if (imgSrc.startsWith('//')) {
-            imgSrc = 'https:' + imgSrc;
-        } else if (imgSrc.startsWith('/')) {
-            imgSrc = window.location.origin + imgSrc;
-        } else if (imgSrc.startsWith('http:')) {
-            imgSrc = changeSrcToHttps(imgSrc);
-        } else { // default case (should be a relative path without a '/' since the other possibilities were eliminated)
-            imgSrc = window.location.origin + window.location.pathname + imgSrc;
-        }
-
+        imgSrc = formatImgSrc(imgSrc);
         imgSrcs.add(imgSrc);
+    }
+
+    const urlRegEx = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?//=]*)/gi;
+    urlRegEx.lastIndex = 0;
+    const urls = document.body.innerHTML.match(urlRegEx);
+    const fileExtRegEx = /.*(\.png|\.svg|\.jpg|\.gif|\.jpeg|\.bmp|\.ico|\.webp|\.tif|\.apng|\.jfif|\.pjpeg|\.pjp).*/i;
+
+    for (let url of urls) {
+        if (url.match(fileExtRegEx) !== null) {
+            url = formatImgSrc(url);
+            imgSrcs.add(url);
+        }
     }
 
     emit({
@@ -42,6 +41,23 @@ function getImageSrcs(maxW) {
             imgSrcs: [...imgSrcs]
         }
     });
+}
+
+function formatImgSrc(imgSrc) {
+    if (!imgSrc ||
+        imgSrc.startsWith('https:') ||
+        imgSrc.startsWith('data:image')) {
+        // do nothing (we need to eliminate this for the rest of the checks)
+    } else if (imgSrc.startsWith('//')) {
+        imgSrc = 'https:' + imgSrc;
+    } else if (imgSrc.startsWith('/')) {
+        imgSrc = window.location.origin + imgSrc;
+    } else if (imgSrc.startsWith('http:')) {
+        imgSrc = changeSrcToHttps(imgSrc);
+    } else { // default case (should be a relative path without a '/' since the other possibilities were eliminated)
+        imgSrc = window.location.origin + window.location.pathname + imgSrc;
+    }
+    return imgSrc;
 }
 
 function getHrefFromAnchor(anchor) {

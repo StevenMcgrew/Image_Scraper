@@ -197,8 +197,8 @@ function removeIllegalChars(str, replacement) {
 function setSettingsForm() {
     chrome.storage.sync.get(null)
         .then((result) => {
-            settingsForm.maxW.value = Math.round(result.maxW) || 5000;
-            settingsForm.maxH.value = Math.round(result.maxH) || 5000;
+            settingsForm.maxW.value = Math.round(result.maxW) || 9999;
+            settingsForm.maxH.value = Math.round(result.maxH) || 9999;
             settingsForm.isScaleDown.checked = result.isScaleDown || false;
             settingsForm.isConvertToJPG.checked = result.isConvertToJPG || false;
             settingsForm.isMakeSquare.checked = result.isMakeSquare || false;
@@ -207,10 +207,14 @@ function setSettingsForm() {
 }
 
 function createSrcWithNewSize(src, newW, newH) {
-    const widthRegex = /width=\d+&/;
-    const heightRegex = /height=\d+&/;
-    src = src.replace(widthRegex, `width=${newW}&`);
-    src = src.replace(heightRegex, `height=${newH}&`);
+    const widthRegex = /width=\d{1,4}/;
+    const heightRegex = /height=\d{1,4}/;
+    const wRegex = /w=\d{1,4}/;
+    const hRegex = /h=\d{1,4}/;
+    src = src.replace(widthRegex, `width=${newW}`);
+    src = src.replace(heightRegex, `height=${newH}`);
+    src = src.replace(wRegex, `w=${newW}`);
+    src = src.replace(hRegex, `h=${newH}`);
     return src;
 }
 
@@ -267,11 +271,14 @@ function onImageLoad(e, totalImgCount) {
     const loaderContainer = document.querySelector('.loaded-cell');
     fillLoader(loaderContainer, 'blue-background');
 
-    if (img.src.includes('width=') && !img.dataset.newlyCreated) {
+    if ((img.src.includes('width=') || img.src.includes('w='))
+        && !img.dataset.newlyCreated) {
         const W = Math.round(settingsForm.maxW.value);
         const H = Math.round(settingsForm.maxH.value);
-        const newSrc = createSrcWithNewSize(img.src, W, H);
-        createNewImgElement(newSrc);
+        if (W < 1921 || H < 1921) {
+            const newSrc = createSrcWithNewSize(img.src, W, H);
+            createNewImgElement(newSrc);
+        }
     }
 
     img = convertResizeSquare(img);
@@ -570,6 +577,9 @@ function getContentType(headers) {
 }
 
 function getFileExt(MIMEtype) {
+    if (!MIMEtype) {
+        return '';
+    }
     const start = MIMEtype.indexOf('/') + 1;
     let imgType = MIMEtype.slice(start);
     switch (imgType) {
