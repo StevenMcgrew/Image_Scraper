@@ -27,7 +27,7 @@ function getImageSrcs(maxW) {
     const urlRegEx = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?//=]*)/gi;
     urlRegEx.lastIndex = 0;
     const urls = document.body.innerHTML.match(urlRegEx);
-    const fileExtRegEx = /.*(\.png|\.svg|\.jpg|\.gif|\.jpeg|\.bmp|\.ico|\.webp|\.tif|\.apng|\.jfif|\.pjpeg|\.pjp).*/i;
+    const fileExtRegEx = /.*(\.png|\.svg|\.jpg|\.gif|\.jpeg|\.bmp|\.ico|\.webp|\.tif|\.tiff|\.avif).*/i;
 
     for (let url of urls) {
         if (url.match(fileExtRegEx) !== null) {
@@ -134,3 +134,4 @@ Emit outgoing messages
 async function emit(message) {
     const response = await chrome.runtime.sendMessage(message);
 }
+

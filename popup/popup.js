@@ -581,11 +581,19 @@ function getFileExt(MIMEtype) {
         return '';
     }
     const start = MIMEtype.indexOf('/') + 1;
-    let imgType = MIMEtype.slice(start);
+    let end = (MIMEtype.indexOf(';'));
+    if (end === -1) {
+        end = undefined;
+    }
+    let imgType = MIMEtype.slice(start, end);
     switch (imgType) {
         case 'jpeg': imgType = 'jpg'; break;
         case 'svg+xml': imgType = 'svg'; break;
         case 'vnd.microsoft.icon': imgType = 'ico'; break;
+    }
+    const allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'tiff', 'tif', 'gif', 'svg', 'bmp', 'ico', 'avif'];
+    if (!allowedExtensions.includes(imgType)) {
+        imgType = '';
     }
     return imgType;
 }
