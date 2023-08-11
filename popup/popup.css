@@ -313,32 +313,29 @@ My styles, note: 1rem = 20px
 
 .loading-panel {
     display: grid;
-    grid-template-columns: auto 28.1rem;
-    grid-template-rows: repeat(4, min-content);
-    row-gap: 15px;
-    column-gap: 10px;
-    align-items: center;
+    grid-template-columns: 87px 1fr;
+    grid-template-rows: min-content;
+    column-gap: 5px;
     font-size: 0.9rem;
-    padding: 2rem 2rem;
+    padding: 1rem 2rem 0rem 2rem;
 }
 
-.loader-label {
+.loading-panel>span {
+    align-self: start;
     justify-self: end;
 }
 
 .loader-container {
-    height: 27px;
-    display: grid;
-    gap: clamp(1px, 2px, 3px);
-    grid-template-columns: repeat(auto-fit, minmax(4px, 8px));
-    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-wrap: wrap;
 }
 
 .loader-div {
     display: inline-block;
     width: 8px;
-    max-height: 27px;
-    min-height: 7px;
+    height: 25px;
+    margin: 1px;
     border-radius: 2px;
 }
 
@@ -356,4 +353,16 @@ My styles, note: 1rem = 20px
 
 .yellow-background {
     background-color: var(--my-warning-badge);
+}
+
+.error-modal>span {
+    font-size: 1rem;
+    color: var(--tooltip-color);
+    background-color: var(--tooltip-background-color);
+    padding: 0.6rem 2rem;
+    border-radius: 4px;
+}
+
+.last-loading-panel {
+    padding-bottom: 2rem;
 }

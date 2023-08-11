@@ -218,10 +218,18 @@ function createSrcWithNewSize(src, newW, newH) {
     return src;
 }
 
-function appendLoader(container, className) {
+function appendLoader(container) {
     const div = document.createElement('div');
     div.classList.add('loader-div');
-    div.classList.add(className);
+    div.classList.add('blue-border');
+    container.appendChild(div);
+}
+
+function appendModifierLoader(container) {
+    const div = document.createElement('div');
+    div.classList.add('loader-div');
+    div.classList.add('yellow-border');
+    container.parentElement.removeAttribute('hidden');
     container.appendChild(div);
 }
 
@@ -232,7 +240,7 @@ function createImgElements(srcs) {
         img.onerror = (e) => { onImageError(e, totalImgCount); };
         img.onload = (e) => { onImageLoad(e, totalImgCount); };
         img.setAttribute('crossorigin', 'anonymous');
-        appendLoader(document.querySelector('.loaded-cell'), 'blue-border');
+        appendLoader(document.querySelector('.loaded-cell'));
         img.src = src;
     }
 }
@@ -244,7 +252,7 @@ function createNewImgElement(src) {
     img.onerror = (e) => { onImageError(e, totalImgCount); };
     img.onload = (e) => { onImageLoad(e, totalImgCount); };
     img.setAttribute('crossorigin', 'anonymous');
-    appendLoader(document.querySelector('.loaded-cell'), 'blue-border');
+    appendLoader(document.querySelector('.loaded-cell'));
     img.src = src;
 }
 
@@ -302,7 +310,7 @@ function fillLoader(container, className) {
     }
 }
 
-function fillModifierLoaders(note) {
+function fillModifierLoader(note) {
     if (note.includes('Converted')) {
         fillLoader(document.querySelector('.converted-cell'), 'yellow-background');
     }
@@ -340,17 +348,17 @@ function convertResizeSquare(img) {
         if (!settingsForm.isScaleDown.checked) {
             return null;
         }
-        appendLoader(document.querySelector('.resized-cell'), 'yellow-border');
+        appendModifierLoader(document.querySelector('.resized-cell'));
         const newSize = determineSize(W, H, maxW, maxH);
         W = newSize.width;
         H = newSize.height;
         if (fileExt !== 'jpg' && fileExt !== 'jpeg') {
-            appendLoader(document.querySelector('.converted-cell'), 'yellow-border');
+            appendModifierLoader(document.querySelector('.converted-cell'));
             fileExt = 'jpg';
             note += 'Converted & ';
         }
         if (settingsForm.isMakeSquare.checked && W !== H) {
-            appendLoader(document.querySelector('.squared-cell'), 'yellow-border');
+            appendModifierLoader(document.querySelector('.squared-cell'));
             drawToSquareCanvas(canvas, img, W, H);
             W = (W > H) ? W : H;
             H = W;
@@ -366,7 +374,7 @@ function convertResizeSquare(img) {
         }
     } else {
         if (settingsForm.isMakeSquare.checked && W !== H) {
-            appendLoader(document.querySelector('.squared-cell'), 'yellow-border');
+            appendModifierLoader(document.querySelector('.squared-cell'));
             drawToSquareCanvas(canvas, img, W, H);
             W = (W > H) ? W : H;
             H = W;
@@ -376,14 +384,14 @@ function convertResizeSquare(img) {
                 return null;
             }
             if (fileExt !== 'jpg' && fileExt !== 'jpeg') {
-                appendLoader(document.querySelector('.converted-cell'), 'yellow-border');
+                appendModifierLoader(document.querySelector('.converted-cell'));
                 fileExt = 'jpg';
                 note += 'Converted & ';
             }
             note += 'Squared';
         } else {
             if (fileExt !== 'jpg' && fileExt !== 'jpeg' && settingsForm.isConvertToJPG.checked) {
-                appendLoader(document.querySelector('.converted-cell'), 'yellow-border');
+                appendModifierLoader(document.querySelector('.converted-cell'));
                 drawToCanvas(canvas, img, W, H);
                 try {
                     img.src = canvas.toDataURL('image/jpeg', 1.0);
@@ -396,7 +404,7 @@ function convertResizeSquare(img) {
         }
     }
 
-    fillModifierLoaders(note);
+    fillModifierLoader(note);
 
     img.dataset.fileName = `${fileName}.${fileExt}`;
     img.dataset.fileExt = fileExt;
@@ -624,8 +632,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 Emit outgoing messages
 ***************************************************************************/
 async function emit(message) {
-    const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
-    const response = await chrome.tabs.sendMessage(tab.id, message);
+    try {
+        const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+        const response = await chrome.tabs.sendMessage(tab.id, message);
+    } catch (error) {
+        const errorModal = document.querySelector('.error-modal');
+        errorModal.firstElementChild.textContent = "ScrapeApe isn't able to work on this page.";
+        openModal(errorModal);
+    }
 }
 
 /**************************************************************************

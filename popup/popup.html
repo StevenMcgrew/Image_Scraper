@@ -52,14 +52,20 @@
         <div class="img-flexwrap">
         </div>
 
-        <div class="loading-panel" hidden>
-            <span class="loader-label">Loaded images: </span>
+        <div class="loading-panel">
+            <span>Images: </span>
             <div class="loader-container loaded-cell"></div>
-            <span class="loader-label">Converted: </span>
+        </div>
+        <div class="loading-panel" hidden>
+            <span>Converted: </span>
             <div class="loader-container converted-cell"></div>
-            <span class="loader-label">Resized: </span>
+        </div>
+        <div class="loading-panel" hidden>
+            <span>Resized: </span>
             <div class="loader-container resized-cell"></div>
-            <span class="loader-label">Squared: </span>
+        </div>
+        <div class="loading-panel last-loading-panel" hidden>
+            <span>Squared: </span>
             <div class="loader-container squared-cell"></div>
         </div>
 
@@ -98,9 +104,9 @@
                 <div>
                     <span>Max Image Size</span>
                 </div>
-                <input type="number" name="maxW" class="num-input" min="1" max="9999" required>
+                <input type="number" name="maxW" class="num-input" min="5" max="9999" required>
                 <span class="size-x">x</span>
-                <input type="number" name="maxH" class="num-input" min="1" max="9999" required>
+                <input type="number" name="maxH" class="num-input" min="5" max="9999" required>
 
                 <div class="margin-top-5">
                     <span>Resize (and Convert)</span>
@@ -176,6 +182,10 @@
                 <button role="button" class="confirm-modal-btn" type="submit" form="settingsForm">Save</button>
             </footer>
         </article>
+    </dialog>
+
+    <dialog class="error-modal">
+        <span></span>
     </dialog>
 
     <canvas class="canvas" hidden></canvas>

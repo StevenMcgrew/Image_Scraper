@@ -132,6 +132,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 Emit outgoing messages
 ***************************************************************************/
 async function emit(message) {
-    const response = await chrome.runtime.sendMessage(message);
+    try {
+        const response = await chrome.runtime.sendMessage(message);
+    } catch (error) {
+        const errorModal = document.querySelector('.error-modal');
+        errorModal.textContent = "Oops! An error occured. Close this extension and try again.";
+        openModal(errorModal);
+    }
 }
 
