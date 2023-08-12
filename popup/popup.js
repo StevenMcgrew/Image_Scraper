@@ -1,14 +1,3 @@
-const getImagesBtn = document.querySelector('.get-images-btn');
-const imgFlexwrap = document.querySelector('.img-flexwrap');
-const downloadBtn = document.querySelector('.download-btn');
-const settingsBtn = document.querySelector('.settings-btn');
-const editSettings = document.querySelector('.edit-settings');
-const cancelModalBtn = document.querySelector('.cancel-modal-btn');
-const settingsForm = document.querySelector('.settings-form');
-const canvas = document.querySelector('.canvas');
-const flexItemTemplate = document.querySelector('.flex-item-template');
-const getImagesPanel = document.querySelector('.get-images-panel');
-const selectAll = document.querySelector('.select-all');
 let imgElements = [];
 let webRequestDetails = {};
 let redirectDetails = {};
@@ -16,19 +5,14 @@ let selectionCount = 0;
 let imgCount = 0;
 let totalImgCount = 0;
 let href = '';
-let isAltKeyDown = false;
 
-document.addEventListener("keydown", function (e) {
-    isAltKeyDown = true;
-});
+function el(selector) {
+    return document.querySelector(selector);
+}
 
-document.addEventListener("keyup", function (e) {
-    isAltKeyDown = false;
-});
-
-selectAll.addEventListener('change', (e) => {
+el('.select-all').addEventListener('change', (e) => {
     const selectAll = e.target;
-    let flexItems = imgFlexwrap.children;
+    let flexItems = el('.img-flexwrap').children;
     for (const flexItem of flexItems) {
         const itemCheckbox = flexItem.firstElementChild.firstElementChild;
         if (selectAll.checked === true && itemCheckbox.checked === false ||
@@ -38,25 +22,26 @@ selectAll.addEventListener('change', (e) => {
     }
 });
 
-settingsBtn.addEventListener('click', (e) => {
+el('.settings-btn').addEventListener('click', (e) => {
     const settingsModal = document.querySelector('.settings-modal');
     openModal(settingsModal);
 });
 
-editSettings.addEventListener('click', (e) => {
+el('.edit-settings').addEventListener('click', (e) => {
     const settingsModal = document.querySelector('.settings-modal');
     openModal(settingsModal);
 });
 
-cancelModalBtn.addEventListener('click', (e) => {
+el('.cancel-modal-btn').addEventListener('click', (e) => {
     setSettingsForm();
     const settingsModal = document.querySelector('.settings-modal');
     closeModal(settingsModal);
 });
 
-settingsForm.addEventListener('submit', (e) => {
+el('.settings-form').addEventListener('submit', (e) => {
     e.preventDefault();
     e.stopPropagation();
+    const settingsForm = e.currentTarget;
 
     const settings = {
         maxW: settingsForm.maxW.value,
@@ -74,24 +59,24 @@ settingsForm.addEventListener('submit', (e) => {
         });
 });
 
-getImagesBtn.addEventListener('click', (e) => {
-    getImagesPanel.hidden = true;
-    document.querySelector('.loading-panel').hidden = false;
+el('.get-images-btn').addEventListener('click', (e) => {
+    el('.get-images-panel').hidden = true;
+    document.querySelector('.loading-container').hidden = false;
     emit({
         getImageSrcs: {
-            maxW: Math.round(settingsForm.maxW.value)
+            maxW: Math.round(el('.settings-form').maxW.value)
         }
     });
 });
 
-downloadBtn.addEventListener('click', (e) => {
+el('.download-btn').addEventListener('click', (e) => {
     e.target.setAttribute('aria-busy', 'true');
     let folderNameWithSlash = '';
-    if (settingsForm.isCreateFolder.checked) {
+    if (el('.settings-form').isCreateFolder.checked) {
         folderNameWithSlash = getFolderName(href) + '/';
     }
 
-    let items = imgFlexwrap.children;
+    let items = el('.img-flexwrap').children;
     for (const item of items) {
         if (item.dataset.checked === 'true') {
             const src = item.querySelector('.img-preview').src;
@@ -111,6 +96,7 @@ downloadBtn.addEventListener('click', (e) => {
 });
 
 function showDownloadBtn(selectionCount) {
+    const downloadBtn = el('.download-btn');
     if (selectionCount === 1) {
         downloadBtn.textContent = `Download 1 image`;
     } else {
@@ -197,6 +183,7 @@ function removeIllegalChars(str, replacement) {
 function setSettingsForm() {
     chrome.storage.sync.get(null)
         .then((result) => {
+            const settingsForm = el('.settings-form');
             settingsForm.maxW.value = Math.round(result.maxW) || 9999;
             settingsForm.maxH.value = Math.round(result.maxH) || 9999;
             settingsForm.isScaleDown.checked = result.isScaleDown || false;
@@ -229,7 +216,7 @@ function appendModifierLoader(container) {
     const div = document.createElement('div');
     div.classList.add('loader-div');
     div.classList.add('yellow-border');
-    container.parentElement.removeAttribute('hidden');
+    container.parentElement.hidden = false;
     container.appendChild(div);
 }
 
@@ -275,6 +262,7 @@ function onImageLoad(e, totalImgCount) {
     let img = e.currentTarget;
     img.onerror = null;
     img.onload = null;
+    const settingsForm = el('.settings-form');
 
     const loaderContainer = document.querySelector('.loaded-cell');
     fillLoader(loaderContainer, 'blue-background');
@@ -325,6 +313,8 @@ function fillModifierLoader(note) {
 function convertResizeSquare(img) {
     let W = img.naturalWidth;
     let H = img.naturalHeight;
+    const settingsForm = el('.settings-form');
+    const canvas = el('.canvas');
 
     if (W < 5 || H < 5) {
         return null;
@@ -416,9 +406,10 @@ function convertResizeSquare(img) {
 
 function appendImgFlexItems() {
     imgElements.sort(compareWidths);
+    const imgFlexwrap = el('.img-flexwrap');
 
     for (const img of imgElements) {
-        const flexItem = flexItemTemplate.content.firstElementChild.cloneNode(true);
+        const flexItem = el('.flex-item-template').content.firstElementChild.cloneNode(true);
 
         const checkboxLabel = flexItem.querySelector('.select-img');
         const checkbox = flexItem.querySelector('.img-checkbox');
@@ -448,8 +439,8 @@ function appendImgFlexItems() {
 
     const imgCount = imgFlexwrap.childElementCount;
     document.querySelector('.select-all-span').textContent = `Select All (${imgCount})`;
-    downloadBtn.textContent = `Download 0 images`;
-    selectAll.hidden = false;
+    el('.download-btn').textContent = `Download 0 images`;
+    el('.select-all').hidden = false;
 }
 
 function toggleChecked(e) {
@@ -492,7 +483,7 @@ function trackSelectionCount(e) {
     selectionCount--;
     showDownloadBtn(selectionCount);
     if (selectionCount === 0) {
-        downloadBtn.hidden = true;
+        el('.download-btn').hidden = true;
     }
 }
 

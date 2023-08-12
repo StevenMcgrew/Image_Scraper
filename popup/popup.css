@@ -71,7 +71,7 @@ My styles, note: 1rem = 20px
 .logo {
     width: 2rem;
     height: 2rem;
-    margin-right: 0.6rem;
+    margin-right: 0.8rem;
 }
 
 .logo-svg {
@@ -311,6 +311,10 @@ My styles, note: 1rem = 20px
     text-decoration: none;
 }
 
+.loading-container {
+    padding-bottom: 2rem;
+}
+
 .loading-panel {
     display: grid;
     grid-template-columns: 87px 1fr;
@@ -361,8 +365,4 @@ My styles, note: 1rem = 20px
     background-color: var(--tooltip-background-color);
     padding: 0.6rem 2rem;
     border-radius: 4px;
-}
-
-.last-loading-panel {
-    padding-bottom: 2rem;
 }
