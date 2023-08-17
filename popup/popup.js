@@ -488,7 +488,7 @@ function trackSelectionCount(e) {
 }
 
 function compareWidths(imgA, imgB) {
-    return imgB.dataset.height - imgA.dataset.width;
+    return imgB.dataset.width - imgA.dataset.width;
 }
 
 
