@@ -365,4 +365,5 @@ My styles, note: 1rem = 20px
     background-color: var(--tooltip-background-color);
     padding: 0.6rem 2rem;
     border-radius: 4px;
+    max-width: 25rem;
 }

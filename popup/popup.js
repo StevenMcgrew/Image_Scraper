@@ -628,7 +628,7 @@ async function emit(message) {
         const response = await chrome.tabs.sendMessage(tab.id, message);
     } catch (error) {
         const errorModal = document.querySelector('.error-modal');
-        errorModal.firstElementChild.textContent = "ScrapeApe isn't able to work on this page.";
+        errorModal.firstElementChild.textContent = "Please refresh the page. If you still see this message, then ScrapeApe doesn't work on this page.";
         openModal(errorModal);
     }
 }
